@@ -77,7 +77,7 @@ const html = `<!DOCTYPE html>
         .logout-btn { background: #764ba2; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .tabs { display: flex; gap: 4px; padding: 4px; background: rgba(255,154,158,0.3); border-bottom: 1px solid rgba(102,126,234,0.4); overflow-x: auto; flex-shrink: 0; min-height: 28px; }
         .tab { padding: 6px 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11px; color: white; flex-shrink: 0; transition: all 0.3s; }
-        .chat-display { flex: 1; overflow-y: auto; padding: 10px; background: rgba(255,240,245,0.7); }
+        .chat-display { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 70px; background: rgba(255,240,245,0.7); }
         .chat-display.group-chat { background-image: url('/besties-bg.png?v=5'); background-size: cover; background-attachment: fixed; background-position: center; }
         .message { margin-bottom: 8px; display: flex; flex-direction: column; }
         .message-sender { font-size: 11px; color: white; margin-bottom: 2px; font-weight: bold; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
@@ -94,16 +94,13 @@ const html = `<!DOCTYPE html>
         .message.valley .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
         .message.amaaya .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
         .message.hilary .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .input-area { background: rgba(255,154,158,0.2); border-top: 1px solid rgba(102,126,234,0.3); display: flex; gap: 4px; flex-shrink: 0; padding: 8px; min-height: 48px; align-items: center; }
+        .input-area { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,154,158,0.95); border-top: 2px solid rgba(102,126,234,0.5); display: flex; gap: 4px; flex-shrink: 0; padding: 10px; min-height: 54px; align-items: center; z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.15); }
         .input-field { flex: 1; padding: 10px; border: 1px solid #667eea; border-radius: 8px; font-size: 14px; margin: 0; }
         .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; transition: all 0.3s; flex-shrink: 0; }
         .send-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; flex-shrink: 0; margin: 0; white-space: nowrap; }
-        .emoji-picker { display: flex; flex-wrap: wrap; max-height: 120px; overflow-y: auto; gap: 4px; padding: 4px; }
+        .emoji-picker { display: flex; flex-wrap: wrap; max-height: 120px; overflow-y: auto; gap: 4px; padding: 4px; position: fixed; bottom: 56px; left: 0; right: 0; background: rgba(255,255,255,0.98); border-top: 2px solid rgba(102,126,234,0.3); z-index: 99; }
         .emoji-picker button { background: none; border: none; font-size: 28px; cursor: pointer; padding: 6px; }
-        .gif-picker { display: flex; flex-direction: column; max-height: 120px; }
-        .gif-picker input { padding: 6px; border: 1px solid #667eea; border-radius: 4px; margin-bottom: 4px; font-size: 11px; }
-        .gif-picker img { max-height: 80px; cursor: pointer; border-radius: 4px; border: 1px solid transparent; transition: all 0.2s; }
-        #gifResults { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; max-height: 80px; overflow-y: auto; }
+        #gifResults { display: none; }
         .gif-picker img:hover { border-color: #667eea; transform: scale(1.05); }
     </style>
 </head>
@@ -459,9 +456,6 @@ const html = `<!DOCTYPE html>
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('msg').addEventListener('keypress', (e) => { if (e.key === 'Enter') window.send(); });
-            document.getElementById('gifSearch').addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') window.searchGifs(e.target.value);
-            });
             
             const savedUser = localStorage.getItem('user');
             if (savedUser) {
@@ -489,45 +483,6 @@ const html = `<!DOCTYPE html>
             ep.style.display = 'none';
         };
 
-        window.searchGifs = async function(query) {
-            const resultsDiv = document.getElementById('gifResults');
-            if (!query || query.trim() === '') {
-                resultsDiv.innerHTML = '<p style="color: #999; font-size: 11px;">Enter search term</p>';
-                return;
-            }
-            resultsDiv.innerHTML = '<p style="color: #999; font-size: 11px;">Searching...</p>';
-            try {
-                const response = await fetch('https://api.giphy.com/v1/gifs/search?q=' + encodeURIComponent(query) + '&limit=6&offset=0&rating=g&api_key=0gyVcq66QBnJp8xVXGDUvNqwVVj8c3F9');
-                const data = await response.json();
-                resultsDiv.innerHTML = '';
-                console.log('GIF API Response:', data);
-                if (data.data && data.data.length > 0) {
-                    data.data.forEach(gif => {
-                        const img = document.createElement('img');
-                        img.src = gif.images.fixed_height_small.url;
-                        img.style.maxHeight = '60px';
-                        img.style.borderRadius = '4px';
-                        img.style.cursor = 'pointer';
-                        img.style.border = '1px solid transparent';
-                        img.style.margin = '2px';
-                        img.alt = gif.title;
-                        img.onclick = () => {
-                            document.getElementById('msg').value += ' [GIF: ' + gif.title + '] ';
-                            document.getElementById('gifPicker').style.display = 'none';
-                            document.getElementById('msg').focus();
-                        };
-                        img.onmouseover = () => img.style.border = '1px solid #667eea';
-                        img.onmouseout = () => img.style.border = '1px solid transparent';
-                        resultsDiv.appendChild(img);
-                    });
-                } else {
-                    resultsDiv.innerHTML = '<p style="color: #999; font-size: 11px;">No GIFs found - try different search</p>';
-                }
-            } catch (error) {
-                console.error('GIF search error:', error);
-                resultsDiv.innerHTML = '<p style="color: #999; font-size: 11px;">Search error - check internet</p>';
-            }
-        };
     </script>
 </body>
 </html>`;
