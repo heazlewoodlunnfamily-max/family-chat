@@ -374,11 +374,17 @@ const html = `<!DOCTYPE html>
                     // Send notification if from someone else
                     if (data.data.user !== currentUser && 'Notification' in window) {
                         if (Notification.permission === 'granted') {
-                            new Notification(data.data.user.toUpperCase() + ' messaged', {
-                                body: data.data.text,
-                                icon: '/cat-image.webp',
-                                tag: 'family-chat'
-                            });
+                            try {
+                                new Notification(data.data.user.toUpperCase() + ' sent a message', {
+                                    body: data.data.text.substring(0, 100),
+                                    icon: '/axolotl.png',
+                                    badge: '/axolotl.png',
+                                    tag: 'family-chat',
+                                    requireInteraction: false
+                                });
+                            } catch (e) {
+                                console.error('Notification error:', e);
+                            }
                         }
                     }
                 }
@@ -464,9 +470,8 @@ const html = `<!DOCTYPE html>
             const savedUser = localStorage.getItem('user');
             if (savedUser) {
                 currentUser = savedUser;
-                document.getElementById('userButton').textContent = savedUser.toUpperCase();
                 document.getElementById('pinScreen').style.display = 'none';
-                document.getElementById('login').style.display = 'flex';
+                document.getElementById('login').style.display = 'none';
                 window.enterChat();
             } else {
                 document.getElementById('pinScreen').style.display = 'flex';
