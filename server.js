@@ -189,7 +189,7 @@ const html = `<!DOCTYPE html>
             const user = userNames[pin];
             console.log('PIN entered:', pin, 'User:', user);
             if (user) {
-                localStorage.setItem('user', user);
+                sessionStorage.setItem('user', user);
                 currentUser = user;
                 document.getElementById('userButton').textContent = user.toUpperCase();
                 document.getElementById('pinScreen').style.display = 'none';
@@ -207,7 +207,7 @@ const html = `<!DOCTYPE html>
         };
 
         window.logout = function() {
-            localStorage.removeItem('user');
+            sessionStorage.removeItem('user');
             document.getElementById('pinInput').value = '';
             document.getElementById('pinScreen').style.display = 'flex';
             document.getElementById('login').style.display = 'none';
@@ -256,7 +256,7 @@ const html = `<!DOCTYPE html>
                 
                 allChats.forEach(chat => {
                     if (!messages[chat]) {
-                        const saved = localStorage.getItem('chat_' + chat);
+                        const saved = sessionStorage.getItem('chat_' + chat);
                         messages[chat] = saved ? JSON.parse(saved) : [];
                     }
                 });
@@ -297,7 +297,7 @@ const html = `<!DOCTYPE html>
         window.login = function(user) {
             if (!user) return;
             currentUser = user;
-            localStorage.setItem('user', user);
+            sessionStorage.setItem('user', user);
             allChats = ['group'];
             
             if (user === 'esther') {
@@ -325,7 +325,7 @@ const html = `<!DOCTYPE html>
             currentChat = allChats[0];
             allChats.forEach(chat => {
                 if (!messages[chat]) {
-                    const saved = localStorage.getItem('chat_' + chat);
+                    const saved = sessionStorage.getItem('chat_' + chat);
                     messages[chat] = saved ? JSON.parse(saved) : [];
                 }
             });
@@ -346,7 +346,7 @@ const html = `<!DOCTYPE html>
         };
 
         window.logout = function() {
-            localStorage.removeItem('user');
+            sessionStorage.removeItem('user');
             location.reload();
         };
 
@@ -366,7 +366,7 @@ const html = `<!DOCTYPE html>
                 } else if (data.type === 'message') {
                     if (!messages[data.data.chatId]) messages[data.data.chatId] = [];
                     messages[data.data.chatId].push(data.data);
-                    localStorage.setItem('chat_' + data.data.chatId, JSON.stringify(messages[data.data.chatId]));
+                    sessionStorage.setItem('chat_' + data.data.chatId, JSON.stringify(messages[data.data.chatId]));
                     if (data.data.chatId === currentChat) window.render();
                     
                     // Send notification if from someone else
@@ -479,7 +479,7 @@ const html = `<!DOCTYPE html>
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('msg').addEventListener('keypress', (e) => { if (e.key === 'Enter') window.send(); });
             
-            const savedUser = localStorage.getItem('user');
+            const savedUser = sessionStorage.getItem('user');
             if (savedUser) {
                 currentUser = savedUser;
                 document.getElementById('pinScreen').style.display = 'none';
