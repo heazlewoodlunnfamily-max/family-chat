@@ -260,8 +260,14 @@ const html = `<!DOCTYPE html>
                 
                 console.log('Messages loaded:', messages);
                 
-                if ('Notification' in window && Notification.permission === 'default') {
-                    Notification.requestPermission();
+                if ('Notification' in window) {
+                    if (Notification.permission === 'granted') {
+                        console.log('Notifications already granted');
+                    } else if (Notification.permission !== 'denied') {
+                        Notification.requestPermission().then(permission => {
+                            console.log('Notification permission:', permission);
+                        });
+                    }
                 }
                 
                 const emojis = '😀😃😄😁😆😅🤣😂😈😉😊😇🙂🙃😌😍🥰😘😗😚😙🥺😋😛😜🤪😝🤑😎🤓🧐😕😟🙁☹️😲😞😖😢😤😠😆😡🤬😈👿💀☠️💩🤡👹👺😺😸😹😻😼😽🙀😿😾❤️🧡💛💚💙💜🖤🤍🤎💔💕💞💓💗💖💘💝💟💌💋💯💢💥💫💦💨🕳️💬👋🤚🖐️✋🖖👌🤌🤏✌️🤞🫰🤟🤘🤙👍👎✊👊🤛🫲🫱💪🦾🦿🦵🦶🫶👂🦻👃🧠🦷🦴👀👁️👅👄🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐽🐸🐵🐒🐶🐱🦁🐯🐻‍❄️🐨🐼🦁🐭🐹🐰🦊🦝🐗🐷🐽🦓🦄🐴🐝🪱🐛🦋🐌🐞🐜🦟🪰🪳‍🕷️🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🐊🐅🐆🦒🦓🦍🦧🐘🦛🦏🐪🐫🦒🦘🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐈🐓🦃🦚🦜🦢🦗🕷️🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🐊🐅🐆🦒';
@@ -364,6 +370,7 @@ const html = `<!DOCTYPE html>
                     
                     // Send notification if from someone else
                     if (data.data.user !== currentUser && 'Notification' in window) {
+                        console.log('Notification check - Permission:', Notification.permission);
                         // Only increment unread if message is NOT in current chat
                         if (data.data.chatId !== currentChat) {
                             unreadCount++;
@@ -371,6 +378,7 @@ const html = `<!DOCTYPE html>
                         }
                         if (Notification.permission === 'granted') {
                             try {
+                                console.log('Sending notification for:', data.data.user);
                                 new Notification(data.data.user.toUpperCase() + ' sent a message', {
                                     body: data.data.text.substring(0, 100),
                                     icon: '/axolotl.png',
@@ -381,6 +389,8 @@ const html = `<!DOCTYPE html>
                             } catch (e) {
                                 console.error('Notification error:', e);
                             }
+                        } else {
+                            console.log('Notifications not granted. Permission:', Notification.permission);
                         }
                     }
                 }
