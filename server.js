@@ -75,7 +75,7 @@ const html = `<!DOCTYPE html>
         .container.show { display: flex; }
         .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); color: white; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; min-height: 40px; }
         .logout-btn { background: #764ba2; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
-        .tabs { display: flex; gap: 6px; padding: 6px; background: rgba(255,154,158,0.3); border-bottom: 1px solid rgba(102,126,234,0.4); overflow-x: auto; flex-shrink: 0; min-height: 36px; }
+        .tabs { display: flex; gap: 4px; padding: 4px; background: rgba(255,154,158,0.3); border-bottom: 1px solid rgba(102,126,234,0.4); overflow-x: auto; flex-shrink: 0; min-height: 28px; }
         .tab { padding: 6px 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11px; color: white; flex-shrink: 0; transition: all 0.3s; }
         .chat-display { flex: 1; overflow-y: auto; padding: 10px; background: rgba(255,240,245,0.7); }
         .chat-display.group-chat { background-image: url('/besties-bg.png?v=5'); background-size: cover; background-attachment: fixed; background-position: center; }
@@ -94,10 +94,10 @@ const html = `<!DOCTYPE html>
         .message.valley .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
         .message.amaaya .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
         .message.hilary .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .input-area { background: rgba(255,154,158,0.2); border-top: 1px solid rgba(102,126,234,0.3); display: flex; gap: 4px; flex-shrink: 0; padding: 6px; min-height: 40px; }
-        .input-field { flex: 1; padding: 8px; border: 1px solid #667eea; border-radius: 6px; font-size: 12px; }
+        .input-area { background: rgba(255,154,158,0.2); border-top: 1px solid rgba(102,126,234,0.3); display: flex; gap: 2px; flex-shrink: 0; padding: 3px; min-height: 32px; align-items: center; }
+        .input-field { flex: 1; padding: 6px; border: 1px solid #667eea; border-radius: 6px; font-size: 12px; margin: 0; }
         .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; transition: all 0.3s; flex-shrink: 0; }
-        .send-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; flex-shrink: 0; }
+        .send-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 10px; flex-shrink: 0; margin: 0; white-space: nowrap; }
         .emoji-picker { display: flex; flex-wrap: wrap; max-height: 100px; overflow-y: auto; }
         .emoji-picker button { background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; }
         .gif-picker { display: flex; flex-direction: column; max-height: 120px; }
@@ -533,27 +533,39 @@ const html = `<!DOCTYPE html>
 
 app.get('/', (req, res) => { res.type('text/html').send(html); });
 
-app.get('/group-chat-bg.png', (req, res) => {
+app.get('/axolotl.png', (req, res) => {
   try {
-    res.type('image/webp').send(fs.readFileSync(path.join(__dirname, 'group-chat-bg.png')));
+    const data = fs.readFileSync(path.join(__dirname, 'axolotl.png'));
+    res.type('image/png').send(data);
   } catch (error) {
-    res.status(404).send('File not found');
-  }
-});
-
-app.get('/bestie-chat-bg.png', (req, res) => {
-  try {
-    res.type('image/webp').send(fs.readFileSync(path.join(__dirname, 'bestie-chat-bg.png')));
-  } catch (error) {
-    res.status(404).send('File not found');
+    res.status(404).send('Image not found');
   }
 });
 
 app.get('/besties-bg.png', (req, res) => {
   try {
-    res.type('image/webp').send(fs.readFileSync(path.join(__dirname, 'besties-bg.png')));
+    const data = fs.readFileSync(path.join(__dirname, 'besties-bg.png'));
+    res.type('image/webp').send(data);
   } catch (error) {
-    res.status(404).send('File not found');
+    res.status(404).send('Image not found');
+  }
+});
+
+app.get('/group-chat-bg.png', (req, res) => {
+  try {
+    const data = fs.readFileSync(path.join(__dirname, 'group-chat-bg.png'));
+    res.type('image/webp').send(data);
+  } catch (error) {
+    res.status(404).send('Image not found');
+  }
+});
+
+app.get('/bestie-chat-bg.png', (req, res) => {
+  try {
+    const data = fs.readFileSync(path.join(__dirname, 'bestie-chat-bg.png'));
+    res.type('image/webp').send(data);
+  } catch (error) {
+    res.status(404).send('Image not found');
   }
 });
 
