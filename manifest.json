@@ -36,6 +36,7 @@
       "form_factor": "narrow"
     }
   ],
+  "badge": "/axolotl.png?v=3",
   "categories": ["productivity", "social"],
   "shortcuts": [
     {
