@@ -101,7 +101,6 @@ const html = `<!DOCTYPE html>
         .emoji-picker { display: flex; flex-wrap: wrap; max-height: 120px; overflow-y: auto; gap: 4px; padding: 4px; position: fixed; bottom: 56px; left: 0; right: 0; background: rgba(255,255,255,0.98); border-top: 2px solid rgba(102,126,234,0.3); z-index: 99; }
         .emoji-picker button { background: none; border: none; font-size: 28px; cursor: pointer; padding: 6px; }
         #gifResults { display: none; }
-        .gif-picker img:hover { border-color: #667eea; transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -486,16 +485,7 @@ const html = `<!DOCTYPE html>
 
         window.toggleEmoji = function() {
             const ep = document.getElementById('emojiPicker');
-            const gp = document.getElementById('gifPicker');
             ep.style.display = ep.style.display === 'none' ? 'flex' : 'none';
-            gp.style.display = 'none';
-        };
-
-        window.toggleGif = function() {
-            const gp = document.getElementById('gifPicker');
-            const ep = document.getElementById('emojiPicker');
-            gp.style.display = gp.style.display === 'none' ? 'flex' : 'none';
-            ep.style.display = 'none';
         };
 
     </script>
