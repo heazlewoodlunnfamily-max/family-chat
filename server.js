@@ -215,6 +215,13 @@ const html = `<!DOCTYPE html>
 
         window.enterChat = function() {
             try {
+                // Request notification permission on chat entry
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission().then(permission => {
+                        console.log('Notification permission requested:', permission);
+                    });
+                }
+                
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('app').classList.add('show');
                 document.getElementById('myname').textContent = currentUser.toUpperCase();
@@ -222,7 +229,7 @@ const html = `<!DOCTYPE html>
                 allChats = ['group'];
                 
                 if (currentUser === 'esther') {
-                    allChats = ['group', 'family-group', 'esther-mama', 'esther-mummy', 'esther-hilary', 'esther-nan', 'esther-rishy', 'esther-poppy', 'esther-sienna', 'esther-valley', 'esther-amaaya'];
+                    allChats = ['group', 'family-group', 'esther-mama', 'esther-mummy', 'esther-hilary', 'esther-nan', 'esther-rishy', 'esther-poppy', 'esther-sienna', 'esther-twins', 'esther-lola'];
                 } else if (currentUser === 'mama') {
                     allChats = ['group', 'family-group', 'esther-mama'];
                 } else if (currentUser === 'mummy') {
