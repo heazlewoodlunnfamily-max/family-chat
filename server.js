@@ -16,7 +16,6 @@ const defaultMessages = {
   'group': [],
   'family-group': [],
   'guptas-chat': [],
-  'amaaya-valley': [],
   'esther-mama': [],
   'esther-mummy': [],
   'esther-hilary': [],
@@ -24,8 +23,7 @@ const defaultMessages = {
   'esther-rishy': [],
   'esther-poppy': [],
   'esther-sienna': [],
-  'esther-valley': [],
-  'esther-amaaya': [],
+  'esther-twins': [],
   'esther-lola': [],
   'lola-nan': [],
   'lola-poppy': []
@@ -153,13 +151,13 @@ const html = `<!DOCTYPE html>
         let currentUser = null, currentChat = 'group', allChats = [], messages = {}, ws = null, connected = false, unreadCount = 0;
 
         const userNames = {
-            '1234': 'esther',
-            '2345': 'lola',
+            '2107': 'esther',
+            '1234': 'lola',
             '9876': 'mama',
             '8765': 'mummy',
-            '3333': 'valley',
-            '4444': 'amaaya',
-            '5555': 'hilary',
+            '1818': 'twins',
+            '1818': 'twins',
+            '1983': 'hilary',
             '6666': 'nan',
             '7777': 'rishy',
             '8888': 'poppy',
@@ -229,10 +227,8 @@ const html = `<!DOCTYPE html>
                     allChats = ['group', 'family-group', 'esther-mama'];
                 } else if (currentUser === 'mummy') {
                     allChats = ['group', 'family-group', 'esther-mummy'];
-                } else if (currentUser === 'amaaya') {
-                    allChats = ['group', 'guptas-chat', 'esther-amaaya', 'amaaya-valley'];
-                } else if (currentUser === 'valley') {
-                    allChats = ['group', 'guptas-chat', 'esther-valley', 'amaaya-valley'];
+                } else if (currentUser === 'twins') {
+                    allChats = ['group', 'guptas-chat', 'esther-twins'];
                 } else if (currentUser === 'hilary') {
                     allChats = ['group', 'guptas-chat'];
                 } else if (currentUser === 'lola') {
@@ -303,10 +299,8 @@ const html = `<!DOCTYPE html>
                 allChats = ['group', 'family-group', 'esther-mama'];
             } else if (user === 'mummy') {
                 allChats = ['group', 'family-group', 'esther-mummy'];
-            } else if (user === 'amaaya') {
-                allChats = ['group', 'guptas-chat', 'esther-amaaya', 'amaaya-valley'];
-            } else if (user === 'valley') {
-                allChats = ['group', 'guptas-chat', 'esther-valley', 'amaaya-valley'];
+            } else if (user === 'twins') {
+                allChats = ['group', 'guptas-chat', 'esther-twins'];
             } else if (user === 'hilary') {
                 allChats = ['group', 'guptas-chat'];
             } else if (user === 'lola') {
@@ -413,8 +407,6 @@ const html = `<!DOCTYPE html>
                     btn.textContent = 'Family';
                 } else if (chatId === 'guptas-chat') {
                     btn.textContent = 'Guptas';
-                } else if (chatId === 'amaaya-valley') {
-                    btn.textContent = currentUser === 'amaaya' ? 'Valley' : 'Amaaya';
                 } else {
                     // For all other chats (esther-X, lola-X, X-Y), find the person who is NOT currentUser
                     const parts = chatId.split('-');
