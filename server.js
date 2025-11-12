@@ -143,7 +143,6 @@ const html = `<!DOCTYPE html>
         <div class="chat-display" id="chat"><div class="empty">Loading...</div></div>
         <div class="input-area">
             <button class="btn" onclick="window.toggleEmoji()">😊</button>
-            <button class="btn" onclick="window.toggleGif()">GIF</button>
             <input type="text" class="input-field" id="msg" placeholder="Say something..." disabled>
             <button class="send-btn" id="sendBtn" onclick="window.send()" disabled>Send</button>
         </div>
