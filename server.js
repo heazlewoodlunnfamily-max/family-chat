@@ -94,20 +94,16 @@ const html = `<!DOCTYPE html>
         .message.valley .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
         .message.amaaya .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
         .message.hilary .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .input-area { background: rgba(255,154,158,0.2); border-top: 1px solid rgba(102,126,234,0.3); display: flex; gap: 2px; flex-shrink: 0; padding: 3px; min-height: 32px; align-items: center; }
-        .input-field { flex: 1; padding: 6px; border: 1px solid #667eea; border-radius: 6px; font-size: 12px; margin: 0; }
+        .input-area { background: rgba(255,154,158,0.2); border-top: 1px solid rgba(102,126,234,0.3); display: flex; gap: 4px; flex-shrink: 0; padding: 8px; min-height: 48px; align-items: center; }
+        .input-field { flex: 1; padding: 10px; border: 1px solid #667eea; border-radius: 8px; font-size: 14px; margin: 0; }
         .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; transition: all 0.3s; flex-shrink: 0; }
-        .send-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 10px; flex-shrink: 0; margin: 0; white-space: nowrap; }
-        .emoji-picker { display: flex; flex-wrap: wrap; max-height: 100px; overflow-y: auto; }
-        .emoji-picker button { background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; }
+        .send-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; flex-shrink: 0; margin: 0; white-space: nowrap; }
+        .emoji-picker { display: flex; flex-wrap: wrap; max-height: 120px; overflow-y: auto; gap: 4px; padding: 4px; }
+        .emoji-picker button { background: none; border: none; font-size: 28px; cursor: pointer; padding: 6px; }
         .gif-picker { display: flex; flex-direction: column; max-height: 120px; }
         .gif-picker input { padding: 6px; border: 1px solid #667eea; border-radius: 4px; margin-bottom: 4px; font-size: 11px; }
         .gif-picker img { max-height: 80px; cursor: pointer; border-radius: 4px; border: 1px solid transparent; transition: all 0.2s; }
         #gifResults { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; max-height: 80px; overflow-y: auto; }
-        .emoji-picker { display: flex; flex-wrap: wrap; }
-        .emoji-picker button { background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px; }
-        .gif-picker { display: flex; }
-        .gif-picker img { cursor: pointer; border-radius: 6px; border: 2px solid transparent; transition: all 0.2s; }
         .gif-picker img:hover { border-color: #667eea; transform: scale(1.05); }
     </style>
 </head>
