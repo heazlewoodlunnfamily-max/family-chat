@@ -152,7 +152,7 @@ const html = `<!DOCTYPE html>
     </div>
 
     <script>
-        let currentUser = null, currentChat = 'group', allChats = [], messages = {}, ws = null, connected = false;
+        let currentUser = null, currentChat = 'group', allChats = [], messages = {}, ws = null, connected = false, unreadCount = 0;
 
         const userNames = {
             '1234': 'esther',
@@ -366,6 +366,11 @@ const html = `<!DOCTYPE html>
                     
                     // Send notification if from someone else
                     if (data.data.user !== currentUser && 'Notification' in window) {
+                        // Only increment unread if message is NOT in current chat
+                        if (data.data.chatId !== currentChat) {
+                            unreadCount++;
+                            window.updateBadge();
+                        }
                         if (Notification.permission === 'granted') {
                             try {
                                 new Notification(data.data.user.toUpperCase() + ' sent a message', {
@@ -418,11 +423,21 @@ const html = `<!DOCTYPE html>
                 
                 btn.onclick = () => { 
                     currentChat = chatId; 
+                    unreadCount = 0;
+                    window.updateBadge();
                     window.renderTabs(); 
                     window.render(); 
                 };
                 div.appendChild(btn);
             });
+        };
+
+        window.updateBadge = function() {
+            if (navigator.setAppBadge && unreadCount > 0) {
+                navigator.setAppBadge(unreadCount);
+            } else if (navigator.clearAppBadge && unreadCount === 0) {
+                navigator.clearAppBadge();
+            }
         };
 
         window.send = function() {
