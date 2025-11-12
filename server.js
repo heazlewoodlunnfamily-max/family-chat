@@ -77,6 +77,8 @@ const html = `<!DOCTYPE html>
         .tab { padding: 6px 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11px; color: white; flex-shrink: 0; transition: all 0.3s; }
         .chat-display { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 70px; background: rgba(255,240,245,0.7); }
         .chat-display.group-chat { background-image: url('/besties-bg.png?v=5'); background-size: cover; background-attachment: fixed; background-position: center; }
+        .chat-display.esther-sienna-chat { background-image: url('/esther-sienna-bg.png?v=1'); background-size: cover; background-attachment: fixed; background-position: center; }
+        .chat-display { background-image: url('/chat-bg.png?v=1'); background-size: cover; background-attachment: fixed; background-position: center; }
         .message { margin-bottom: 8px; display: flex; flex-direction: column; }
         .message-sender { font-size: 11px; color: white; margin-bottom: 2px; font-weight: bold; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
         .message-bubble { max-width: 75%; padding: 8px 10px; border-radius: 12px; word-wrap: break-word; font-size: 13px; width: fit-content; line-height: 1.3; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-weight: 500; }
@@ -135,6 +137,7 @@ const html = `<!DOCTYPE html>
     <div class="container" id="app">
         <div class="header">
             <div id="myname"></div>
+            <button class="logout-btn" id="notifBtn" onclick="window.enableNotifications()" style="display: none;">🔔 Allow</button>
             <button class="logout-btn" onclick="window.logout()">Logout</button>
         </div>
         <div class="tabs" id="tabs"></div>
@@ -227,6 +230,12 @@ const html = `<!DOCTYPE html>
                 document.getElementById('myname').textContent = currentUser.toUpperCase();
                 
                 allChats = ['group'];
+                
+                // Check notification permission and show button if needed
+                if ('Notification' in window && Notification.permission !== 'granted') {
+                    document.getElementById('notifBtn').style.display = 'block';
+                    console.log('Notifications not granted. Show request button.');
+                }
                 
                 if (currentUser === 'esther') {
                     allChats = ['group', 'family-group', 'esther-mama', 'esther-mummy', 'esther-hilary', 'esther-nan', 'esther-rishy', 'esther-poppy', 'esther-sienna', 'esther-twins', 'esther-lola'];
@@ -355,8 +364,17 @@ const html = `<!DOCTYPE html>
             ws = new WebSocket(proto + '//' + location.host);
             ws.onopen = () => {
                 connected = true;
+                console.log('✅ WebSocket connected');
                 document.getElementById('msg').disabled = false;
                 document.getElementById('sendBtn').disabled = false;
+            };
+            ws.onerror = (error) => {
+                console.error('❌ WebSocket error:', error);
+            };
+            ws.onclose = () => {
+                connected = false;
+                console.log('⚠️ WebSocket closed, reconnecting...');
+                setTimeout(window.connect, 3000);
             };
             ws.onmessage = (e) => {
                 const data = JSON.parse(e.data);
@@ -396,7 +414,6 @@ const html = `<!DOCTYPE html>
                     }
                 }
             };
-            ws.onclose = () => { connected = false; setTimeout(window.connect, 3000); };
         };
 
         window.renderTabs = function() {
@@ -439,6 +456,21 @@ const html = `<!DOCTYPE html>
             });
         };
 
+        window.enableNotifications = function() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    console.log('Notification permission:', permission);
+                    if (permission === 'granted') {
+                        document.getElementById('notifBtn').style.display = 'none';
+                        new Notification('Notifications Enabled! 🔔', {
+                            body: 'You will now get messages alerts',
+                            icon: '/axolotl.png'
+                        });
+                    }
+                });
+            }
+        };
+
         window.updateBadge = function() {
             if (navigator.setAppBadge && unreadCount > 0) {
                 navigator.setAppBadge(unreadCount);
@@ -450,9 +482,34 @@ const html = `<!DOCTYPE html>
         window.send = function() {
             const inp = document.getElementById('msg');
             const text = inp.value.trim();
-            if (!text || !connected) return;
-            ws.send(JSON.stringify({ type: 'new_message', user: currentUser, chatId: currentChat, text: text }));
-            inp.value = '';
+            
+            console.log('Send clicked. Text:', text, 'Connected:', connected);
+            
+            if (!text) {
+                console.log('No text to send');
+                return;
+            }
+            
+            if (!connected) {
+                console.log('Not connected to server');
+                alert('Not connected. Please refresh the page.');
+                return;
+            }
+            
+            try {
+                const msg = JSON.stringify({ type: 'new_message', user: currentUser, chatId: currentChat, text: text });
+                console.log('Sending message:', msg);
+                ws.send(msg);
+                inp.value = '';
+                
+                // Add message to local state immediately and render
+                if (!messages[currentChat]) messages[currentChat] = [];
+                messages[currentChat].push({ id: Date.now(), user: currentUser, text: text, chatId: currentChat });
+                window.render();
+            } catch (e) {
+                console.error('Error sending message:', e);
+                alert('Error sending message. Please try again.');
+            }
         };
 
         window.render = function() {
@@ -460,6 +517,8 @@ const html = `<!DOCTYPE html>
             let className = 'chat-display';
             if (currentChat === 'group') {
                 className += ' group-chat';
+            } else if (currentChat === 'esther-sienna') {
+                className += ' esther-sienna-chat';
             }
             div.className = className;
             div.innerHTML = '';
@@ -514,6 +573,24 @@ app.get('/axolotl.png', (req, res) => {
 app.get('/besties-bg.png', (req, res) => {
   try {
     const data = fs.readFileSync(path.join(__dirname, 'besties-bg.png'));
+    res.type('image/webp').send(data);
+  } catch (error) {
+    res.status(404).send('Image not found');
+  }
+});
+
+app.get('/esther-sienna-bg.png', (req, res) => {
+  try {
+    const data = fs.readFileSync(path.join(__dirname, 'esther-sienna-bg.png'));
+    res.type('image/webp').send(data);
+  } catch (error) {
+    res.status(404).send('Image not found');
+  }
+});
+
+app.get('/chat-bg.png', (req, res) => {
+  try {
+    const data = fs.readFileSync(path.join(__dirname, 'chat-bg.png'));
     res.type('image/webp').send(data);
   } catch (error) {
     res.status(404).send('Image not found');
