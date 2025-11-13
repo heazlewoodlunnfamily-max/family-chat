@@ -151,7 +151,7 @@ const html = `<!DOCTYPE html>
     </div>
 
     <script>
-        let currentUser = null, currentChat = 'group', allChats = [], messages = {}, ws = null, connected = false, unreadCount = 0;
+        let currentUser = null, currentChat = 'group', allChats = [], messages = {}, ws = null, connected = false, unreadCount = 0, connectionAttempted = false, receivedMessageIds = new Set(), sentMessageIds = new Set();
 
         const userNames = {
             '2107': 'esther',
@@ -356,10 +356,23 @@ const html = `<!DOCTYPE html>
 
         window.logout = function() {
             sessionStorage.removeItem('user');
+            connectionAttempted = false;
             location.reload();
         };
 
         window.connect = function() {
+            if (connectionAttempted) {
+                console.log('Already connecting/connected, skipping duplicate connection');
+                return;
+            }
+            connectionAttempted = true;
+            
+            // Close any existing connection first
+            if (ws) {
+                console.log('Closing old WebSocket connection');
+                ws.close();
+            }
+            
             const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
             ws = new WebSocket(proto + '//' + location.host);
             ws.onopen = () => {
@@ -378,14 +391,34 @@ const html = `<!DOCTYPE html>
             };
             ws.onmessage = (e) => {
                 const data = JSON.parse(e.data);
+                console.log('Client received:', data.type, data);
                 if (data.type === 'load_messages') {
                     messages = data.messages;
                     window.render();
                 } else if (data.type === 'message') {
+                    // Prevent duplicate messages - check by ID and content
+                    const msgKey = data.data.id + '-' + data.data.user + '-' + data.data.text;
+                    console.log('Checking for duplicate:', msgKey, 'Already seen:', receivedMessageIds.has(msgKey));
+                    if (receivedMessageIds.has(msgKey)) {
+                        console.log('🚫 DUPLICATE message ignored:', msgKey);
+                        return;
+                    }
+                    console.log('✅ NEW message accepted:', msgKey);
+                    receivedMessageIds.add(msgKey);
+                    
+                    // Clear old IDs after many messages to avoid memory leak
+                    if (receivedMessageIds.size > 1000) {
+                        receivedMessageIds.clear();
+                    }
+                    
                     if (!messages[data.data.chatId]) messages[data.data.chatId] = [];
                     messages[data.data.chatId].push(data.data);
                     sessionStorage.setItem('chat_' + data.data.chatId, JSON.stringify(messages[data.data.chatId]));
-                    if (data.data.chatId === currentChat) window.render();
+                    console.log('Total messages in', data.data.chatId + ':', messages[data.data.chatId].length);
+                    if (data.data.chatId === currentChat) {
+                        console.log('Re-rendering chat. Total messages:', messages[currentChat].length);
+                        window.render();
+                    }
                     
                     // Send notification if from someone else
                     if (data.data.user !== currentUser && 'Notification' in window) {
@@ -497,15 +530,26 @@ const html = `<!DOCTYPE html>
             }
             
             try {
+                const sendKey = currentUser + '-' + currentChat + '-' + text + '-' + Date.now();
+                console.log('🔵 SEND ATTEMPT:', sendKey);
+                
+                // Check if we already sent this exact message recently
+                if (sentMessageIds.has(text + currentChat)) {
+                    console.log('⚠️ DUPLICATE SEND ATTEMPT BLOCKED - Already sent recently!');
+                    return;
+                }
+                
+                sentMessageIds.add(text + currentChat);
+                
                 const msg = JSON.stringify({ type: 'new_message', user: currentUser, chatId: currentChat, text: text });
-                console.log('Sending message:', msg);
+                console.log('📤 Sending message:', msg);
                 ws.send(msg);
                 inp.value = '';
                 
-                // Add message to local state immediately and render
-                if (!messages[currentChat]) messages[currentChat] = [];
-                messages[currentChat].push({ id: Date.now(), user: currentUser, text: text, chatId: currentChat });
-                window.render();
+                // Clear this from recent sends after 2 seconds
+                setTimeout(() => {
+                    sentMessageIds.delete(text + currentChat);
+                }, 2000);
             } catch (e) {
                 console.error('Error sending message:', e);
                 alert('Error sending message. Please try again.');
@@ -523,8 +567,10 @@ const html = `<!DOCTYPE html>
             div.className = className;
             div.innerHTML = '';
             const msgs = messages[currentChat] || [];
+            console.log('Rendering', msgs.length, 'messages');
             if (msgs.length === 0) { div.innerHTML = '<div class="empty">No messages yet</div>'; return; }
-            msgs.forEach(m => {
+            msgs.forEach((m, index) => {
+                console.log('  Message ' + index + ':', m.id, m.user, m.text.substring(0, 20));
                 const d = document.createElement('div');
                 d.className = 'message ' + (m.user === currentUser ? 'own' : m.user);
                 const sender = '<div class="message-sender">' + m.user.toUpperCase() + '</div>';
@@ -634,23 +680,33 @@ app.get('/service-worker.js', (req, res) => {
 let messages = loadMessages();
 
 wss.on('connection', (ws) => {
+  console.log('New WebSocket connection');
   ws.send(JSON.stringify({ type: 'load_messages', messages }));
   ws.on('message', (data) => {
     try {
       const msg = JSON.parse(data);
+      console.log('Server received:', msg.type, msg);
       if (msg.type === 'new_message') {
         const newMsg = { id: Date.now(), user: msg.user, text: msg.text, chatId: msg.chatId };
         const chatId = msg.chatId || 'group';
         if (!messages[chatId]) messages[chatId] = [];
         messages[chatId].push(newMsg);
         saveMessages(messages);
+        console.log('Broadcasting to', wss.clients.size, 'clients');
+        // Broadcast to ALL OTHER clients (NOT the sender)
         wss.clients.forEach(client => {
-          if (client.readyState === WebSocket.OPEN) {
+          if (client.readyState === WebSocket.OPEN && client !== ws) {
+            console.log('Sending message to other client');
             client.send(JSON.stringify({ type: 'message', data: newMsg }));
           }
         });
+        // Send confirmation back to sender only
+        console.log('Sending confirmation to sender');
+        ws.send(JSON.stringify({ type: 'message', data: newMsg }));
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error('Server message error:', error);
+    }
   });
 });
 
