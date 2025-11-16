@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const fs = require('fs');
@@ -145,6 +145,8 @@ const html = `<!DOCTYPE html>
         <div class="chat-display" id="chat"><div class="empty">Loading...</div></div>
         <div class="input-area">
             <button class="btn" onclick="window.toggleEmoji()">😊</button>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="window.sendImage()">
+            <button class="btn" onclick="document.getElementById('imageInput').click()">📷</button>
             <input type="text" class="input-field" id="msg" placeholder="Say something..." disabled>
             <button class="send-btn" id="sendBtn" onclick="window.send()" disabled>Send</button>
         </div>
@@ -554,6 +556,44 @@ const html = `<!DOCTYPE html>
             }
         };
 
+        window.sendImage = function() {
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            console.log('📷 Image selected:', file.name);
+            
+            // Convert image to base64
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                
+                if (!connected) {
+                    alert('Not connected. Please refresh the page.');
+                    return;
+                }
+                
+                try {
+                    const msg = JSON.stringify({ 
+                        type: 'new_message', 
+                        user: currentUser, 
+                        chatId: currentChat, 
+                        text: '[Image]',
+                        image: base64,
+                        fileName: file.name
+                    });
+                    console.log('📤 Sending image message');
+                    ws.send(msg);
+                    fileInput.value = '';
+                } catch (e) {
+                    console.error('Error sending image:', e);
+                    alert('Error sending image. Please try again.');
+                }
+            };
+            reader.readAsDataURL(file);
+        };
+
         window.render = function() {
             const div = document.getElementById('chat');
             let className = 'chat-display';
@@ -572,7 +612,16 @@ const html = `<!DOCTYPE html>
                 const d = document.createElement('div');
                 d.className = 'message ' + (m.user === currentUser ? 'own' : m.user);
                 const sender = '<div class="message-sender">' + m.user.toUpperCase() + '</div>';
-                const content = '<div class="message-bubble">' + m.text + '</div>';
+                
+                let content = '';
+                if (m.image) {
+                    // Display image
+                    content = '<div class="message-bubble" style="padding: 0; background: transparent;"><img src="' + m.image + '" style="max-width: 200px; max-height: 200px; border-radius: 12px; display: block;"></div>';
+                } else {
+                    // Display text
+                    content = '<div class="message-bubble">' + m.text + '</div>';
+                }
+                
                 d.innerHTML = sender + content;
                 div.appendChild(d);
             });
@@ -693,7 +742,14 @@ wss.on('connection', (ws) => {
       const msg = JSON.parse(data);
       console.log('Server received:', msg.type, msg);
       if (msg.type === 'new_message') {
-        const newMsg = { id: Date.now(), user: msg.user, text: msg.text, chatId: msg.chatId };
+        const newMsg = { 
+          id: Date.now(), 
+          user: msg.user, 
+          text: msg.text, 
+          chatId: msg.chatId,
+          image: msg.image,  // Include image data
+          fileName: msg.fileName
+        };
         const chatId = msg.chatId || 'group';
         if (!messages[chatId]) messages[chatId] = [];
         messages[chatId].push(newMsg);
