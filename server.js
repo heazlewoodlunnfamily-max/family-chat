@@ -79,10 +79,10 @@ const html = `<!DOCTYPE html>
         .chat-display.group-chat { background-image: url('/besties-bg.png?v=5'); background-size: cover; background-attachment: fixed; background-position: center; }
         .chat-display.esther-sienna-chat { background-image: url('/esther-sienna-bg.png?v=1'); background-size: cover; background-attachment: fixed; background-position: center; }
         .chat-display { background-image: url('/chat-bg.png?v=1'); background-size: cover; background-attachment: fixed; background-position: center; }
-        .message { display: flex; flex-direction: column; margin-bottom: 2px; }
+        .message { display: flex; flex-direction: column; margin-bottom: 6px; }
         .message.own { align-items: flex-end; }
         .message-sender { display: none; }
-        .message-bubble { padding: 8px 12px; border-radius: 18px; word-wrap: break-word; font-size: 15px; width: fit-content; max-width: 85%; line-height: 1.35; box-shadow: 0 1px 2px rgba(0,0,0,0.08); font-weight: 500; }
+        .message-bubble { padding: 10px 14px; border-radius: 18px; word-wrap: break-word; font-size: 16px; width: fit-content; max-width: 85%; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.08); font-weight: 500; }
         .message.own .message-bubble { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 18px 4px 18px 18px; }
         .message.esther .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
         .message.mama .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
@@ -94,10 +94,10 @@ const html = `<!DOCTYPE html>
         .message.sienna .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
         .message.twins .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
         .message.hilary .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .input-area { position: relative; background: rgba(255,154,158,0.95); border-top: 1px solid rgba(102,126,234,0.3); display: flex; gap: 6px; flex-shrink: 0; padding: 10px; align-items: center; z-index: 100; backdrop-filter: blur(5px); box-shadow: 0 -2px 8px rgba(0,0,0,0.1); width: 100%; min-height: 50px; }
-        .input-field { flex: 1; padding: 10px; border: 1px solid #667eea; border-radius: 8px; font-size: 14px; margin: 0; }
-        .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; transition: all 0.3s; flex-shrink: 0; }
-        .send-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; flex-shrink: 0; margin: 0; white-space: nowrap; }
+        .input-area { position: relative; background: rgba(255,154,158,0.95); border-top: 1px solid rgba(102,126,234,0.3); display: flex; gap: 8px; flex-shrink: 0; padding: 12px; align-items: center; z-index: 100; backdrop-filter: blur(5px); box-shadow: 0 -2px 8px rgba(0,0,0,0.1); width: 100%; min-height: 54px; }
+        .input-field { flex: 1; padding: 12px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 16px; margin: 0; background: #ffffff; }
+        .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; transition: all 0.3s; flex-shrink: 0; }
+        .send-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; flex-shrink: 0; margin: 0; white-space: nowrap; }
         .emoji-picker { display: flex; flex-wrap: wrap; max-height: 120px; overflow-y: auto; gap: 4px; padding: 4px; position: relative; background: rgba(255,255,255,0.95); border-top: 1px solid rgba(102,126,234,0.2); z-index: 99; }
         .emoji-picker button { background: none; border: none; font-size: 28px; cursor: pointer; padding: 6px; }
         #gifResults { display: none; }
