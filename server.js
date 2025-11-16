@@ -1,4 +1,4 @@
- const express = require('express');
+const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const fs = require('fs');
@@ -10,7 +10,20 @@ const wss = new WebSocket.Server({ server });
 
 app.use(express.json());
 
-const messagesFile = path.join(__dirname, 'messages.json');
+const messagesFile = process.env.RENDER ? '/var/data/messages.json' : path.join(__dirname, 'messages.json');
+
+// Ensure directory exists on Render
+if (process.env.RENDER) {
+  const dataDir = '/var/data';
+  if (!fs.existsSync(dataDir)) {
+    try {
+      fs.mkdirSync(dataDir, { recursive: true });
+      console.log('✅ Created persistent data directory');
+    } catch (e) {
+      console.error('Could not create data directory:', e);
+    }
+  }
+}
 
 const defaultMessages = {
   'group': [],
@@ -33,15 +46,15 @@ function loadMessages() {
   try {
     if (fs.existsSync(messagesFile)) {
       const data = fs.readFileSync(messagesFile, 'utf8');
-      console.log('✅ Messages loaded from server storage - PERSISTENT!');
+      console.log('✅ Messages loaded from:', messagesFile);
       return JSON.parse(data);
     } else {
-      console.log('Creating new messages file');
+      console.log('📝 Creating new messages file at:', messagesFile);
       saveMessages(defaultMessages);
       return defaultMessages;
     }
   } catch (error) {
-    console.error('Error loading messages:', error);
+    console.error('❌ Error loading messages:', error);
     return defaultMessages;
   }
 }
@@ -49,11 +62,21 @@ function loadMessages() {
 function saveMessages(msgs) {
   try {
     fs.writeFileSync(messagesFile, JSON.stringify(msgs, null, 2));
-    console.log('✅ Messages saved to server storage');
+    console.log('✅ Messages saved to:', messagesFile);
   } catch (error) {
-    console.error('Error saving messages:', error);
+    console.error('❌ Error saving messages:', error);
   }
 }
+
+// Auto-save messages every second
+let messages = loadMessages();
+setInterval(() => {
+  try {
+    fs.writeFileSync(messagesFile, JSON.stringify(messages, null, 2));
+  } catch (error) {
+    console.error('Auto-save error:', error);
+  }
+}, 1000);
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -72,7 +95,7 @@ const html = `<!DOCTYPE html>
         .login-btn { padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 16px; font-size: 14px; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; }
         .container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #ffd89b 0%, #19547b 25%, #ffecd2 50%, #ff9a9e 75%, #fad0c4 100%); display: none; flex-direction: column; z-index: 50; overflow: hidden; justify-content: space-between; }
         .container.show { display: flex; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); color: white; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: bold; flex-shrink: 0; min-height: 38px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); color: white; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; min-height: 52px; gap: 10px; }
         .logout-btn { background: #764ba2; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .tabs { display: flex; gap: 4px; padding: 3px 6px; background: rgba(255,154,158,0.3); border-bottom: 1px solid rgba(102,126,234,0.4); overflow-x: auto; flex-shrink: 0; min-height: 26px; align-items: center; }
         .tab { padding: 6px 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; color: white; flex-shrink: 0; transition: all 0.3s; }
@@ -137,7 +160,10 @@ const html = `<!DOCTYPE html>
 
     <div class="container" id="app">
         <div class="header">
-            <div id="myname"></div>
+            <div style="display: flex; flex-direction: column; flex: 1;">
+                <div id="myname" style="font-size: 12px; opacity: 0.8;">You: </div>
+                <div id="chatName" style="font-size: 18px; font-weight: bold;">Select a chat</div>
+            </div>
             <button class="logout-btn" id="notifBtn" onclick="window.enableNotifications()">🔔 Allow</button>
             <button class="logout-btn" onclick="window.logout()">Logout</button>
         </div>
@@ -261,6 +287,7 @@ const html = `<!DOCTYPE html>
                 }
                 
                 currentChat = allChats[0];
+                window.updateChatName();
                 console.log('Current user:', currentUser);
                 console.log('Available chats:', allChats);
                 
@@ -480,11 +507,41 @@ const html = `<!DOCTYPE html>
                     currentChat = chatId; 
                     unreadCount = 0;
                     window.updateBadge();
+                    window.updateChatName();
                     window.renderTabs(); 
                     window.render(); 
                 };
                 div.appendChild(btn);
             });
+        };
+
+        window.updateChatName = function() {
+            let chatDisplayName = 'Chat';
+            
+            if (currentChat === 'group') {
+                chatDisplayName = '👥 Group Chat';
+            } else if (currentChat === 'family-group') {
+                chatDisplayName = '👨‍👩‍👧‍👦 Family Chat';
+            } else if (currentChat === 'guptas-chat') {
+                chatDisplayName = '💬 Guptas Chat';
+            } else {
+                // For direct chats, show both names
+                const parts = currentChat.split('-');
+                let person1, person2;
+                
+                if (parts[0] === currentUser) {
+                    person1 = parts[0];
+                    person2 = parts[1];
+                } else {
+                    person1 = parts[1];
+                    person2 = parts[0];
+                }
+                
+                const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+                chatDisplayName = capitalize(person1) + ' ↔️ ' + capitalize(person2);
+            }
+            
+            document.getElementById('chatName').textContent = chatDisplayName;
         };
 
         window.enableNotifications = function() {
@@ -797,8 +854,6 @@ app.get('/service-worker.js', (req, res) => {
   res.type('application/javascript').send(fs.readFileSync(path.join(__dirname, 'service-worker.js'), 'utf8'));
 });
 
-let messages = loadMessages();
-
 wss.on('connection', (ws) => {
   console.log('New WebSocket connection');
   ws.send(JSON.stringify({ type: 'load_messages', messages }));
@@ -845,4 +900,4 @@ process.on('SIGTERM', () => {
   console.log('Saving messages...');
   saveMessages(messages);
   process.exit(0);
-});
+}); 
