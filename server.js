@@ -49,6 +49,7 @@ function loadMessages() {
 function saveMessages(msgs) {
   try {
     fs.writeFileSync(messagesFile, JSON.stringify(msgs, null, 2));
+    console.log('✅ Messages saved to server storage');
   } catch (error) {
     console.error('Error saving messages:', error);
   }
@@ -137,7 +138,7 @@ const html = `<!DOCTYPE html>
     <div class="container" id="app">
         <div class="header">
             <div id="myname"></div>
-            <button class="logout-btn" id="notifBtn" onclick="window.enableNotifications()" style="display: none;">🔔 Allow</button>
+            <button class="logout-btn" id="notifBtn" onclick="window.enableNotifications()">🔔 Allow</button>
             <button class="logout-btn" onclick="window.logout()">Logout</button>
         </div>
         <div class="tabs" id="tabs"></div>
@@ -581,16 +582,24 @@ const html = `<!DOCTYPE html>
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('msg').addEventListener('keypress', (e) => { if (e.key === 'Enter') window.send(); });
             
+            // Check if we have a saved user session
             const savedUser = sessionStorage.getItem('user');
             if (savedUser) {
+                // User is already logged in - go straight to chat
                 currentUser = savedUser;
                 document.getElementById('pinScreen').style.display = 'none';
                 document.getElementById('login').style.display = 'none';
                 window.enterChat();
             } else {
+                // No active session - show login screen
                 document.getElementById('pinScreen').style.display = 'flex';
                 document.getElementById('login').style.display = 'none';
             }
+            
+            // Keep session alive while app is running
+            window.addEventListener('beforeunload', () => {
+                console.log('App closing - session will be cleared on reload');
+            });
         });
 
         window.toggleEmoji = function() {
