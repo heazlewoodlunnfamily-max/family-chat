@@ -33,7 +33,7 @@ function loadMessages() {
   try {
     if (fs.existsSync(messagesFile)) {
       const data = fs.readFileSync(messagesFile, 'utf8');
-      console.log('Messages loaded');
+      console.log('✅ Messages loaded from server storage - PERSISTENT!');
       return JSON.parse(data);
     } else {
       console.log('Creating new messages file');
@@ -69,36 +69,36 @@ const html = `<!DOCTYPE html>
         .login-screen { position: fixed; width: 100vw; height: 100vh; background: linear-gradient(135deg, #ffd89b 0%, #19547b 25%, #ffd89b 50%, #ff9a9e 75%, #fad0c4 100%); display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 10px 20px; text-align: center; z-index: 100; overflow: hidden; }
         .login-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 320px; max-height: 35vh; overflow-y: auto; margin-top: 10px; }
         .login-btn { padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 16px; font-size: 14px; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; }
-        .container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #ffd89b 0%, #19547b 25%, #ffecd2 50%, #ff9a9e 75%, #fad0c4 100%); display: none; flex-direction: column; z-index: 50; overflow: hidden; }
+        .container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #ffd89b 0%, #19547b 25%, #ffecd2 50%, #ff9a9e 75%, #fad0c4 100%); display: none; flex-direction: column; z-index: 50; overflow: hidden; justify-content: space-between; }
         .container.show { display: flex; }
         .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); color: white; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; min-height: 40px; }
         .logout-btn { background: #764ba2; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .tabs { display: flex; gap: 4px; padding: 4px; background: rgba(255,154,158,0.3); border-bottom: 1px solid rgba(102,126,234,0.4); overflow-x: auto; flex-shrink: 0; min-height: 28px; }
         .tab { padding: 6px 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11px; color: white; flex-shrink: 0; transition: all 0.3s; }
-        .chat-display { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 70px; background: rgba(255,240,245,0.7); }
+        .chat-display { flex: 1; overflow-y: auto; padding: 12px 8px; background-size: cover; background-attachment: fixed; background-position: center; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 4px; }
         .chat-display.group-chat { background-image: url('/besties-bg.png?v=5'); background-size: cover; background-attachment: fixed; background-position: center; }
         .chat-display.esther-sienna-chat { background-image: url('/esther-sienna-bg.png?v=1'); background-size: cover; background-attachment: fixed; background-position: center; }
         .chat-display { background-image: url('/chat-bg.png?v=1'); background-size: cover; background-attachment: fixed; background-position: center; }
-        .message { margin-bottom: 8px; display: flex; flex-direction: column; }
-        .message-sender { font-size: 11px; color: white; margin-bottom: 2px; font-weight: bold; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-        .message-bubble { max-width: 75%; padding: 8px 10px; border-radius: 12px; word-wrap: break-word; font-size: 13px; width: fit-content; line-height: 1.3; box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-weight: 500; }
-        .message.own .message-bubble { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .message.esther .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.mama .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.mummy .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.lola .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.nan .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.poppy .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.rishy .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.sienna .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.valley .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.amaaya .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .message.hilary .message-bubble { background: #ffffff; color: #333; border: 2px solid #764ba2; }
-        .input-area { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,154,158,0.95); border-top: 2px solid rgba(102,126,234,0.5); display: flex; gap: 4px; flex-shrink: 0; padding: 10px; min-height: 54px; align-items: center; z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.15); }
+        .message { display: flex; flex-direction: column; margin-bottom: 2px; }
+        .message.own { align-items: flex-end; }
+        .message-sender { display: none; }
+        .message-bubble { padding: 8px 12px; border-radius: 18px; word-wrap: break-word; font-size: 15px; width: fit-content; max-width: 85%; line-height: 1.35; box-shadow: 0 1px 2px rgba(0,0,0,0.08); font-weight: 500; }
+        .message.own .message-bubble { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 18px 4px 18px 18px; }
+        .message.esther .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .message.mama .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .message.mummy .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .message.lola .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .message.nan .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .message.poppy .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .message.rishy .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .message.sienna .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .message.twins .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .message.hilary .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
+        .input-area { position: relative; background: rgba(255,154,158,0.95); border-top: 1px solid rgba(102,126,234,0.3); display: flex; gap: 6px; flex-shrink: 0; padding: 10px; align-items: center; z-index: 100; backdrop-filter: blur(5px); box-shadow: 0 -2px 8px rgba(0,0,0,0.1); width: 100%; min-height: 50px; }
         .input-field { flex: 1; padding: 10px; border: 1px solid #667eea; border-radius: 8px; font-size: 14px; margin: 0; }
         .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; transition: all 0.3s; flex-shrink: 0; }
         .send-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; flex-shrink: 0; margin: 0; white-space: nowrap; }
-        .emoji-picker { display: flex; flex-wrap: wrap; max-height: 120px; overflow-y: auto; gap: 4px; padding: 4px; position: fixed; bottom: 56px; left: 0; right: 0; background: rgba(255,255,255,0.98); border-top: 2px solid rgba(102,126,234,0.3); z-index: 99; }
+        .emoji-picker { display: flex; flex-wrap: wrap; max-height: 120px; overflow-y: auto; gap: 4px; padding: 4px; position: relative; background: rgba(255,255,255,0.95); border-top: 1px solid rgba(102,126,234,0.2); z-index: 99; }
         .emoji-picker button { background: none; border: none; font-size: 28px; cursor: pointer; padding: 6px; }
         #gifResults { display: none; }
     </style>
@@ -265,8 +265,7 @@ const html = `<!DOCTYPE html>
                 
                 allChats.forEach(chat => {
                     if (!messages[chat]) {
-                        const saved = sessionStorage.getItem('chat_' + chat);
-                        messages[chat] = saved ? JSON.parse(saved) : [];
+                        messages[chat] = [];
                     }
                 });
                 
@@ -334,8 +333,7 @@ const html = `<!DOCTYPE html>
             currentChat = allChats[0];
             allChats.forEach(chat => {
                 if (!messages[chat]) {
-                    const saved = sessionStorage.getItem('chat_' + chat);
-                    messages[chat] = saved ? JSON.parse(saved) : [];
+                    messages[chat] = [];
                 }
             });
             
@@ -413,7 +411,6 @@ const html = `<!DOCTYPE html>
                     
                     if (!messages[data.data.chatId]) messages[data.data.chatId] = [];
                     messages[data.data.chatId].push(data.data);
-                    sessionStorage.setItem('chat_' + data.data.chatId, JSON.stringify(messages[data.data.chatId]));
                     console.log('Total messages in', data.data.chatId + ':', messages[data.data.chatId].length);
                     if (data.data.chatId === currentChat) {
                         console.log('Re-rendering chat. Total messages:', messages[currentChat].length);
