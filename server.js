@@ -144,9 +144,7 @@ const html = `<!DOCTYPE html>
         <div class="tabs" id="tabs"></div>
         <div class="chat-display" id="chat"><div class="empty">Loading...</div></div>
         <div class="input-area">
-            <button class="btn" onclick="window.toggleEmoji()">😊</button>
-            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="window.sendImage()">
-            <button class="btn" onclick="document.getElementById('imageInput').click()">📷</button>
+            <button class="btn" id="voiceBtn" onclick="window.toggleVoiceRecording()" style="background: linear-gradient(135deg, #667eea, #764ba2);">🎤</button>
             <input type="text" class="input-field" id="msg" placeholder="Say something..." disabled>
             <button class="send-btn" id="sendBtn" onclick="window.send()" disabled>Send</button>
         </div>
@@ -154,7 +152,7 @@ const html = `<!DOCTYPE html>
     </div>
 
     <script>
-        let currentUser = null, currentChat = 'group', allChats = [], messages = {}, ws = null, connected = false, unreadCount = 0, connectionAttempted = false, receivedMessageIds = new Set(), sentMessageIds = new Set();
+        let currentUser = null, currentChat = 'group', allChats = [], messages = {}, ws = null, connected = false, unreadCount = 0, connectionAttempted = false, receivedMessageIds = new Set(), sentMessageIds = new Set(), mediaRecorder = null, audioChunks = [];
 
         const userNames = {
             '2107': 'esther',
@@ -556,6 +554,70 @@ const html = `<!DOCTYPE html>
             }
         };
 
+        window.toggleVoiceRecording = function() {
+            const btn = document.getElementById('voiceBtn');
+            
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                // Stop recording
+                mediaRecorder.stop();
+                btn.textContent = '🎤';
+                btn.style.opacity = '1';
+            } else {
+                // Start recording
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        audioChunks = [];
+                        mediaRecorder = new MediaRecorder(stream);
+                        
+                        mediaRecorder.ondataavailable = (event) => {
+                            audioChunks.push(event.data);
+                        };
+                        
+                        mediaRecorder.onstop = () => {
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                            const reader = new FileReader();
+                            
+                            reader.onload = (e) => {
+                                const base64 = e.target.result;
+                                
+                                if (!connected) {
+                                    alert('Not connected. Please refresh the page.');
+                                    return;
+                                }
+                                
+                                try {
+                                    const msg = JSON.stringify({ 
+                                        type: 'new_message', 
+                                        user: currentUser, 
+                                        chatId: currentChat, 
+                                        text: '🎙️ Voice Message',
+                                        voice: base64
+                                    });
+                                    console.log('📤 Sending voice message');
+                                    ws.send(msg);
+                                } catch (e) {
+                                    console.error('Error sending voice:', e);
+                                    alert('Error sending voice message. Please try again.');
+                                }
+                            };
+                            reader.readAsDataURL(audioBlob);
+                            
+                            // Stop all tracks
+                            stream.getTracks().forEach(track => track.stop());
+                        };
+                        
+                        mediaRecorder.start();
+                        btn.textContent = '⏹️ Stop';
+                        btn.style.opacity = '0.7';
+                        console.log('🎤 Recording started...');
+                    })
+                    .catch(error => {
+                        console.error('Error accessing microphone:', error);
+                        alert('Please allow microphone access to send voice messages.');
+                    });
+            }
+        };
+
         window.sendImage = function() {
             const fileInput = document.getElementById('imageInput');
             const file = fileInput.files[0];
@@ -614,7 +676,10 @@ const html = `<!DOCTYPE html>
                 const sender = '<div class="message-sender">' + m.user.toUpperCase() + '</div>';
                 
                 let content = '';
-                if (m.image) {
+                if (m.voice) {
+                    // Display voice message player
+                    content = '<div class="message-bubble" style="padding: 8px 12px;"><audio controls style="width: 160px; height: 28px;"><source src="' + m.voice + '" type="audio/wav"></audio></div>';
+                } else if (m.image) {
                     // Display image
                     content = '<div class="message-bubble" style="padding: 0; background: transparent;"><img src="' + m.image + '" style="max-width: 200px; max-height: 200px; border-radius: 12px; display: block;"></div>';
                 } else {
@@ -748,6 +813,7 @@ wss.on('connection', (ws) => {
           text: msg.text, 
           chatId: msg.chatId,
           image: msg.image,  // Include image data
+          voice: msg.voice,  // Include voice data
           fileName: msg.fileName
         };
         const chatId = msg.chatId || 'group';
