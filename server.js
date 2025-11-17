@@ -61,10 +61,17 @@ function loadMessages() {
 
 function saveMessages(msgs) {
   try {
+    // Ensure directory exists before saving
+    if (process.env.RENDER) {
+      const dataDir = '/var/data';
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+    }
     fs.writeFileSync(messagesFile, JSON.stringify(msgs, null, 2));
     console.log('✅ Messages saved to:', messagesFile);
   } catch (error) {
-    console.error('❌ Error saving messages:', error);
+    console.error('❌ Error saving messages:', error.message);
   }
 }
 
@@ -72,9 +79,16 @@ function saveMessages(msgs) {
 let messages = loadMessages();
 setInterval(() => {
   try {
+    // Ensure directory exists before saving
+    if (process.env.RENDER) {
+      const dataDir = '/var/data';
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+    }
     fs.writeFileSync(messagesFile, JSON.stringify(messages, null, 2));
   } catch (error) {
-    console.error('Auto-save error:', error);
+    console.error('Auto-save error:', error.message);
   }
 }, 1000);
 
