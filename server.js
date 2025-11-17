@@ -12,18 +12,8 @@ app.use(express.json());
 
 const messagesFile = process.env.RENDER ? '/var/data/messages.json' : path.join(__dirname, 'messages.json');
 
-// Ensure directory exists on Render
-if (process.env.RENDER) {
-  const dataDir = '/var/data';
-  if (!fs.existsSync(dataDir)) {
-    try {
-      fs.mkdirSync(dataDir, { recursive: true });
-      console.log('✅ Created persistent data directory');
-    } catch (e) {
-      console.error('Could not create data directory:', e);
-    }
-  }
-}
+// Keep messages in memory (primary storage)
+let messagesStorage = {};
 
 const defaultMessages = {
   'group': [],
@@ -44,34 +34,38 @@ const defaultMessages = {
 
 function loadMessages() {
   try {
+    // Try to load from file
     if (fs.existsSync(messagesFile)) {
       const data = fs.readFileSync(messagesFile, 'utf8');
-      console.log('✅ Messages loaded from:', messagesFile);
-      return JSON.parse(data);
-    } else {
-      console.log('📝 Creating new messages file at:', messagesFile);
-      saveMessages(defaultMessages);
-      return defaultMessages;
+      console.log('✅ Messages loaded from file:', messagesFile);
+      messagesStorage = JSON.parse(data);
+      return messagesStorage;
     }
   } catch (error) {
-    console.error('❌ Error loading messages:', error);
-    return defaultMessages;
+    console.warn('⚠️ Could not read file:', error.message);
   }
+  
+  // Fallback: use in-memory storage
+  if (Object.keys(messagesStorage).length > 0) {
+    console.log('✅ Using messages from memory');
+    return messagesStorage;
+  }
+  
+  console.log('📝 Using default messages');
+  messagesStorage = JSON.parse(JSON.stringify(defaultMessages));
+  return messagesStorage;
 }
 
 function saveMessages(msgs) {
+  // Always save to memory
+  messagesStorage = JSON.parse(JSON.stringify(msgs));
+  
+  // Try to save to file as backup
   try {
-    // Ensure directory exists before saving
-    if (process.env.RENDER) {
-      const dataDir = '/var/data';
-      if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
-      }
-    }
     fs.writeFileSync(messagesFile, JSON.stringify(msgs, null, 2));
-    console.log('✅ Messages saved to:', messagesFile);
+    console.log('✅ Saved to file');
   } catch (error) {
-    console.error('❌ Error saving messages:', error.message);
+    console.warn('⚠️ File save failed (using memory):', error.message);
   }
 }
 
