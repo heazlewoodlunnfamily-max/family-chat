@@ -125,7 +125,7 @@ const html = `<!DOCTYPE html>
             <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '0'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">0</button>
             <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px; background: #ff6b6b;" type="button" onclick="document.getElementById('pinInput').value = document.getElementById('pinInput').value.slice(0, -1);">DEL</button>
         </div>
-        <button class="login-btn" style="width: 200px; padding: 14px; font-size: 16px;" onclick="window.checkPin()">Login</button>
+        <button class="login-btn" style="width: 200px; padding: 14px; font-size: 16px; cursor: pointer;" type="button" onclick="console.log('Login button clicked'); window.checkPin();">LOGIN</button>
     </div>
 
     <div class="login-screen" id="login" style="display: none;">
@@ -210,38 +210,61 @@ const html = `<!DOCTYPE html>
         };
 
         window.checkPin = function() {
-            const pin = document.getElementById('pinInput').value;
-            console.log('🔐 Checking PIN:', pin, 'Length:', pin.length);
-            
-            if (pin.length !== 4) {
-                alert('PIN must be 4 digits');
-                return;
-            }
-            
-            const user = userNames[pin];
-            console.log('🔑 PIN entered:', pin, 'User:', user);
-            
-            if (user) {
-                console.log('✅ PIN correct! User:', user);
-                sessionStorage.setItem('user', user);
-                currentUser = user;
-                console.log('📱 Current user set to:', currentUser);
-                document.getElementById('userButton').textContent = user.toUpperCase();
-                document.getElementById('pinScreen').style.display = 'none';
-                document.getElementById('login').style.display = 'flex';
+            try {
+                console.log('🔐 checkPin called');
+                const pinInput = document.getElementById('pinInput');
+                if (!pinInput) {
+                    console.error('❌ PIN input not found');
+                    alert('Error: PIN input not found');
+                    return;
+                }
                 
-                setTimeout(() => {
-                    try {
-                        window.enterChat();
-                    } catch (error) {
-                        console.error('❌ Error entering chat:', error);
-                        alert('Error loading chat. Try again.');
+                const pin = pinInput.value.trim();
+                console.log('🔐 Checking PIN:', pin, 'Length:', pin.length);
+                
+                if (pin.length !== 4) {
+                    alert('PIN must be 4 digits. You entered: ' + pin.length);
+                    return;
+                }
+                
+                const user = userNames[pin];
+                console.log('🔑 PIN entered:', pin, 'User:', user);
+                
+                if (user) {
+                    console.log('✅ PIN correct! User:', user);
+                    sessionStorage.setItem('user', user);
+                    currentUser = user;
+                    console.log('📱 Current user set to:', currentUser);
+                    
+                    const userBtn = document.getElementById('userButton');
+                    if (userBtn) {
+                        userBtn.textContent = user.toUpperCase();
                     }
-                }, 300);
-            } else {
-                console.log('❌ Wrong PIN');
-                alert('Wrong PIN! Try again.');
-                document.getElementById('pinInput').value = '';
+                    
+                    const pinScreen = document.getElementById('pinScreen');
+                    const loginScreen = document.getElementById('login');
+                    
+                    if (pinScreen) pinScreen.style.display = 'none';
+                    if (loginScreen) loginScreen.style.display = 'flex';
+                    
+                    console.log('📱 Entering chat in 300ms...');
+                    setTimeout(() => {
+                        try {
+                            console.log('📱 Calling enterChat');
+                            window.enterChat();
+                        } catch (error) {
+                            console.error('❌ Error entering chat:', error);
+                            alert('Error loading chat: ' + error.message);
+                        }
+                    }, 300);
+                } else {
+                    console.log('❌ Wrong PIN:', pin);
+                    alert('❌ Wrong PIN! Try again.\n\nValid PINs:\n2107=Esther, 9876=Mama, 8765=Mummy');
+                    pinInput.value = '';
+                }
+            } catch (error) {
+                console.error('❌ Error in checkPin:', error);
+                alert('Error: ' + error.message);
             }
         };
 
