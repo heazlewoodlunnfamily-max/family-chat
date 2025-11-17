@@ -112,18 +112,18 @@ const html = `<!DOCTYPE html>
         <h2 style="color: white; margin: 10px 0 20px 0; font-size: 18px;">Enter PIN</h2>
         <input type="text" id="pinInput" placeholder="••••" inputmode="numeric" maxlength="4" style="padding: 12px; font-size: 32px; border: 3px solid #007AFF; border-radius: 10px; width: 180px; text-align: center; letter-spacing: 15px; margin-bottom: 20px; background: #ffffff; font-weight: bold; color: #000; -webkit-text-security: disc;" autocomplete="off" onkeyup="if(this.value.length===4) window.checkPin();">
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 200px; margin-bottom: 15px;">
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('1')">1</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('2')">2</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('3')">3</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('4')">4</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('5')">5</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('6')">6</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('7')">7</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('8')">8</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('9')">9</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px; background: #999;" onclick="window.clearPin()">Clear</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('0')">0</button>
-            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px; background: #ff6b6b;" onclick="window.delPin()">DEL</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '1'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">1</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '2'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">2</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '3'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">3</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '4'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">4</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '5'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">5</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '6'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">6</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '7'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">7</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '8'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">8</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '9'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">9</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px; background: #999;" type="button" onclick="document.getElementById('pinInput').value = '';">Clear</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" type="button" onclick="document.getElementById('pinInput').value += '0'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">0</button>
+            <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px; background: #ff6b6b;" type="button" onclick="document.getElementById('pinInput').value = document.getElementById('pinInput').value.slice(0, -1);">DEL</button>
         </div>
         <button class="login-btn" style="width: 200px; padding: 14px; font-size: 16px;" onclick="window.checkPin()">Login</button>
     </div>
