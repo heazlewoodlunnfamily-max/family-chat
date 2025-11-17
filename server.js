@@ -210,61 +210,61 @@ const html = `<!DOCTYPE html>
         };
 
         window.checkPin = function() {
+            console.log('✅ checkPin function called!');
+            
             try {
-                console.log('🔐 checkPin called');
                 const pinInput = document.getElementById('pinInput');
-                if (!pinInput) {
-                    console.error('❌ PIN input not found');
-                    alert('Error: PIN input not found');
+                const pin = pinInput ? pinInput.value : '';
+                
+                console.log('📍 PIN value:', pin);
+                console.log('📍 PIN length:', pin.length);
+                console.log('📍 userNames object:', userNames);
+                
+                if (pin.length === 0) {
+                    alert('⚠️ Please enter a PIN');
                     return;
                 }
-                
-                const pin = pinInput.value.trim();
-                console.log('🔐 Checking PIN:', pin, 'Length:', pin.length);
                 
                 if (pin.length !== 4) {
-                    alert('PIN must be 4 digits. You entered: ' + pin.length);
+                    alert('⚠️ PIN must be exactly 4 digits (you entered ' + pin.length + ')');
                     return;
                 }
                 
-                const user = userNames[pin];
-                console.log('🔑 PIN entered:', pin, 'User:', user);
-                
-                if (user) {
-                    console.log('✅ PIN correct! User:', user);
-                    sessionStorage.setItem('user', user);
+                // Check if PIN exists in userNames
+                if (userNames.hasOwnProperty(pin)) {
+                    const user = userNames[pin];
+                    console.log('✅ Valid PIN! User:', user);
+                    
+                    // Save and switch user
                     currentUser = user;
-                    console.log('📱 Current user set to:', currentUser);
+                    sessionStorage.setItem('user', user);
                     
-                    const userBtn = document.getElementById('userButton');
-                    if (userBtn) {
-                        userBtn.textContent = user.toUpperCase();
-                    }
-                    
+                    // Hide PIN screen, show login screen
                     const pinScreen = document.getElementById('pinScreen');
-                    const loginScreen = document.getElementById('login');
+                    const loginDiv = document.getElementById('login');
                     
                     if (pinScreen) pinScreen.style.display = 'none';
-                    if (loginScreen) loginScreen.style.display = 'flex';
+                    if (loginDiv) loginDiv.style.display = 'flex';
                     
-                    console.log('📱 Entering chat in 300ms...');
+                    // Update user button
+                    const userBtn = document.getElementById('userButton');
+                    if (userBtn) userBtn.textContent = user.toUpperCase();
+                    
+                    // Wait and enter chat
                     setTimeout(() => {
-                        try {
-                            console.log('📱 Calling enterChat');
-                            window.enterChat();
-                        } catch (error) {
-                            console.error('❌ Error entering chat:', error);
-                            alert('Error loading chat: ' + error.message);
-                        }
-                    }, 300);
+                        window.enterChat();
+                    }, 200);
+                    
                 } else {
-                    console.log('❌ Wrong PIN:', pin);
-                    alert('❌ Wrong PIN! Try again.\n\nValid PINs:\n2107=Esther, 9876=Mama, 8765=Mummy');
+                    console.log('❌ Invalid PIN:', pin);
+                    console.log('✅ Valid PINs are:', Object.keys(userNames));
+                    alert('❌ Wrong PIN!\n\nValid PINs:\n• 2107 = Esther\n• 9876 = Mama\n• 8765 = Mummy\n• 1234 = Lola\n• 1818 = Twins');
                     pinInput.value = '';
                 }
             } catch (error) {
-                console.error('❌ Error in checkPin:', error);
-                alert('Error: ' + error.message);
+                console.error('💥 Error in checkPin:', error);
+                console.error('Stack:', error.stack);
+                alert('❌ Error: ' + error.message);
             }
         };
 
