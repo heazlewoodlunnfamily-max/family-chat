@@ -89,42 +89,49 @@ const html = `<!DOCTYPE html>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { height: 100%; margin: 0; padding: 0; }
-        body { height: 100vh; overflow: hidden; margin: 0; padding: 0; font-family: Arial, sans-serif; background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 20%, #ffecd2 40%, #fcb69f 60%, #ff9a9e 80%, #fad0c4 100%); }
-        .login-screen { position: fixed; width: 100vw; height: 100vh; background: linear-gradient(135deg, #ffd89b 0%, #19547b 25%, #ffd89b 50%, #ff9a9e 75%, #fad0c4 100%); display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 10px 20px; text-align: center; z-index: 100; overflow: hidden; }
-        .login-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 320px; max-height: 35vh; overflow-y: auto; margin-top: 10px; }
-        .login-btn { padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 16px; font-size: 14px; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; }
-        .container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #ffd89b 0%, #19547b 25%, #ffecd2 50%, #ff9a9e 75%, #fad0c4 100%); display: none; flex-direction: column; z-index: 50; overflow: hidden; justify-content: space-between; }
+        body { height: 100vh; overflow: hidden; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif; background: #f5f5f7; }
+        .login-screen { position: fixed; width: 100vw; height: 100vh; background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; z-index: 100; overflow: hidden; }
+        .login-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; width: 100%; max-width: 300px; max-height: 35vh; overflow-y: auto; margin-top: 20px; }
+        .login-btn { padding: 14px; background: #007AFF; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,122,255,0.3); transition: all 0.2s; }
+        .login-btn:active { transform: scale(0.95); }
+        .container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: none; flex-direction: column; z-index: 50; overflow: hidden; justify-content: space-between; }
         .container.show { display: flex; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); color: white; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; flex-shrink: 0; min-height: 52px; gap: 10px; }
-        .logout-btn { background: #764ba2; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
-        .tabs { display: flex; gap: 4px; padding: 3px 6px; background: rgba(255,154,158,0.3); border-bottom: 1px solid rgba(102,126,234,0.4); overflow-x: auto; flex-shrink: 0; min-height: 26px; align-items: center; }
-        .tab { padding: 6px 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; color: white; flex-shrink: 0; transition: all 0.3s; }
-        .chat-display { flex: 1; overflow-y: auto; padding: 8px 6px; background-size: cover; background-attachment: fixed; background-position: center; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 2px; }
-        .chat-display.group-chat { background-image: url('/besties-bg.png?v=5'); background-size: cover; background-attachment: fixed; background-position: center; }
-        .chat-display.esther-sienna-chat { background-image: url('/esther-sienna-bg.png?v=1'); background-size: cover; background-attachment: fixed; background-position: center; }
-        .chat-display { background-image: url('/chat-bg.png?v=1'); background-size: cover; background-attachment: fixed; background-position: center; }
-        .message { display: flex; flex-direction: column; margin-bottom: 4px; }
+        .header { background: #ffffff; color: #000; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; flex-shrink: 0; min-height: 56px; border-bottom: 1px solid #e5e5ea; box-shadow: 0 1px 3px rgba(0,0,0,0.05); gap: 10px; }
+        .logout-btn { background: #007AFF; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .tabs { display: flex; gap: 8px; padding: 8px 16px; background: #ffffff; border-bottom: 1px solid #e5e5ea; overflow-x: auto; flex-shrink: 0; min-height: 44px; align-items: center; -webkit-overflow-scrolling: touch; }
+        .tab { padding: 6px 14px; background: #e5e5ea; border: none; border-radius: 20px; cursor: pointer; font-weight: 500; font-size: 13px; color: #000; flex-shrink: 0; transition: all 0.2s; white-space: nowrap; }
+        .tab:active { background: #d1d1d6; }
+        .chat-display { flex: 1; overflow-y: auto; padding: 12px 8px; background: #ffffff; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 2px; }
+        .chat-display.group-chat { background: #ffffff; }
+        .chat-display.esther-sienna-chat { background: #ffffff; }
+        .message { display: flex; flex-direction: column; margin-bottom: 4px; animation: slideIn 0.2s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .message.own { align-items: flex-end; }
         .message-sender { display: none; }
-        .message-bubble { padding: 12px 16px; border-radius: 18px; word-wrap: break-word; font-size: 17px; width: fit-content; max-width: 85%; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.08); font-weight: 500; }
-        .message.own .message-bubble { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 18px 4px 18px 18px; }
-        .message.esther .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .message.mama .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .message.mummy .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .message.lola .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .message.nan .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .message.poppy .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .message.rishy .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .message.sienna .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .message.twins .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .message.hilary .message-bubble { background: #ffffff; color: #333; border-radius: 18px 18px 4px 18px; }
-        .input-area { position: relative; background: rgba(255,154,158,0.95); border-top: 1px solid rgba(102,126,234,0.3); display: flex; gap: 6px; flex-shrink: 0; padding: 8px 10px; align-items: center; z-index: 100; backdrop-filter: blur(5px); box-shadow: 0 -2px 8px rgba(0,0,0,0.1); width: 100%; min-height: 48px; }
-        .input-field { flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 16px; margin: 0; background: #ffffff; }
-        .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; transition: all 0.3s; flex-shrink: 0; }
-        .send-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 15px; flex-shrink: 0; margin: 0; white-space: nowrap; }
-        .emoji-picker { display: none; flex-wrap: wrap; max-height: 0; overflow-y: hidden; gap: 4px; padding: 0; position: relative; background: rgba(255,255,255,0.95); border-top: 1px solid rgba(102,126,234,0.2); z-index: 99; transition: all 0.3s ease; }
+        .message-bubble { padding: 10px 14px; border-radius: 18px; word-wrap: break-word; font-size: 16px; width: fit-content; max-width: 85%; line-height: 1.4; box-shadow: none; font-weight: 500; }
+        .message.own .message-bubble { background: #007AFF; color: white; border-radius: 18px 4px 18px 18px; }
+        .message.esther .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .message.mama .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .message.mummy .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .message.lola .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .message.nan .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .message.poppy .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .message.rishy .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .message.sienna .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .message.twins .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .message.hilary .message-bubble { background: #e5e5ea; color: #000; border-radius: 18px 18px 4px 18px; }
+        .input-area { position: relative; background: #ffffff; border-top: 1px solid #e5e5ea; display: flex; gap: 8px; flex-shrink: 0; padding: 10px 12px; align-items: flex-end; z-index: 100; width: 100%; min-height: 52px; }
+        .input-field { flex: 1; padding: 10px 14px; border: 1px solid #e5e5ea; border-radius: 20px; font-size: 16px; margin: 0; background: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .input-field:focus { outline: none; border-color: #007AFF; background: #ffffff; }
+        .btn { background: #e5e5ea; color: #000; border: none; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; flex-shrink: 0; }
+        .btn:active { background: #d1d1d6; }
+        .send-btn { background: #007AFF; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; flex-shrink: 0; margin: 0; white-space: nowrap; transition: all 0.2s; }
+        .send-btn:active { opacity: 0.8; }
+        .emoji-picker { display: none; flex-wrap: wrap; max-height: 0; overflow-y: hidden; gap: 4px; padding: 0; position: relative; background: #ffffff; border-top: 1px solid #e5e5ea; z-index: 99; transition: all 0.3s ease; }
         .emoji-picker button { background: none; border: none; font-size: 28px; cursor: pointer; padding: 6px; }
-        #myname { font-size: 16px; font-weight: bold; }
+        #myname { font-size: 14px; font-weight: 600; color: #999; }
+        #chatName { font-size: 18px; font-weight: 700; color: #000; }
+        .empty { text-align: center; color: #999; padding: 20px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -178,7 +185,7 @@ const html = `<!DOCTYPE html>
     </div>
 
     <script>
-        let currentUser = null, currentChat = 'group', allChats = [], messages = {}, ws = null, connected = false, unreadCount = 0, connectionAttempted = false, receivedMessageIds = new Set(), sentMessageIds = new Set(), mediaRecorder = null, audioChunks = [];
+        let currentUser = null, currentChat = 'group', allChats = [], messages = {}, ws = null, connected = false, unreadCount = 0, receivedMessageIds = new Set(), sentMessageIds = new Set(), mediaRecorder = null, audioChunks = [];
 
         const userNames = {
             '2107': 'esther',
@@ -382,21 +389,23 @@ const html = `<!DOCTYPE html>
 
         window.logout = function() {
             sessionStorage.removeItem('user');
-            connectionAttempted = false;
             location.reload();
         };
 
         window.connect = function() {
-            if (connectionAttempted) {
-                console.log('Already connecting/connected, skipping duplicate connection');
+            if (connected) {
+                console.log('Already connected, skipping');
                 return;
             }
-            connectionAttempted = true;
             
             // Close any existing connection first
             if (ws) {
                 console.log('Closing old WebSocket connection');
-                ws.close();
+                try {
+                    ws.close();
+                } catch (e) {
+                    console.error('Error closing:', e);
+                }
             }
             
             const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -409,11 +418,14 @@ const html = `<!DOCTYPE html>
             };
             ws.onerror = (error) => {
                 console.error('❌ WebSocket error:', error);
+                connected = false;
             };
             ws.onclose = () => {
                 connected = false;
-                console.log('⚠️ WebSocket closed, reconnecting...');
-                setTimeout(window.connect, 3000);
+                console.log('⚠️ WebSocket closed, reconnecting in 2 seconds...');
+                setTimeout(() => {
+                    window.connect();
+                }, 2000);
             };
             ws.onmessage = (e) => {
                 const data = JSON.parse(e.data);
@@ -616,26 +628,52 @@ const html = `<!DOCTYPE html>
             
             if (mediaRecorder && mediaRecorder.state === 'recording') {
                 // Stop recording
+                console.log('⏹️ Stopping recording...');
                 mediaRecorder.stop();
                 btn.textContent = '🎤';
                 btn.style.opacity = '1';
             } else {
                 // Start recording
-                navigator.mediaDevices.getUserMedia({ audio: true })
+                console.log('🎤 Starting microphone...');
+                navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    } 
+                })
                     .then(stream => {
+                        console.log('✅ Microphone access granted');
                         audioChunks = [];
-                        mediaRecorder = new MediaRecorder(stream);
+                        
+                        // Check supported MIME types
+                        let mimeType = 'audio/webm';
+                        if (!MediaRecorder.isTypeSupported(mimeType)) {
+                            mimeType = 'audio/wav';
+                        }
+                        if (!MediaRecorder.isTypeSupported(mimeType)) {
+                            mimeType = 'audio/mp4';
+                        }
+                        if (!MediaRecorder.isTypeSupported(mimeType)) {
+                            mimeType = '';
+                        }
+                        
+                        console.log('Using MIME type:', mimeType);
+                        
+                        mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
                         
                         mediaRecorder.ondataavailable = (event) => {
+                            console.log('📦 Received audio chunk');
                             audioChunks.push(event.data);
                         };
                         
                         mediaRecorder.onstop = () => {
-                            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                            console.log('Processing voice message...');
+                            const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/wav' });
                             const reader = new FileReader();
                             
                             reader.onload = (e) => {
                                 const base64 = e.target.result;
+                                console.log('✅ Voice converted to base64');
                                 
                                 if (!connected) {
                                     alert('Not connected. Please refresh the page.');
@@ -652,11 +690,21 @@ const html = `<!DOCTYPE html>
                                     });
                                     console.log('📤 Sending voice message');
                                     ws.send(msg);
+                                    btn.textContent = '✅';
+                                    setTimeout(() => { btn.textContent = '🎤'; }, 1000);
                                 } catch (e) {
                                     console.error('Error sending voice:', e);
                                     alert('Error sending voice message. Please try again.');
+                                    btn.textContent = '🎤';
                                 }
                             };
+                            
+                            reader.onerror = (e) => {
+                                console.error('FileReader error:', e);
+                                alert('Error reading voice message.');
+                                btn.textContent = '🎤';
+                            };
+                            
                             reader.readAsDataURL(audioBlob);
                             
                             // Stop all tracks
@@ -669,8 +717,9 @@ const html = `<!DOCTYPE html>
                         console.log('🎤 Recording started...');
                     })
                     .catch(error => {
-                        console.error('Error accessing microphone:', error);
-                        alert('Please allow microphone access to send voice messages.');
+                        console.error('❌ Microphone error:', error);
+                        alert('Microphone not available. Please:\n1. Check your phone settings\n2. Allow microphone access\n3. Try again');
+                        btn.textContent = '🎤';
                     });
             }
         };
@@ -900,4 +949,4 @@ process.on('SIGTERM', () => {
   console.log('Saving messages...');
   saveMessages(messages);
   process.exit(0);
-}); 
+});
