@@ -195,7 +195,7 @@ const html = `<!DOCTYPE html>
 
         window.checkPin = function() {
             const pin = document.getElementById('pinInput').value;
-            console.log('Checking PIN:', pin, 'Length:', pin.length);
+            console.log('🔐 Checking PIN:', pin, 'Length:', pin.length);
             
             if (pin.length !== 4) {
                 alert('PIN must be 4 digits');
@@ -203,21 +203,25 @@ const html = `<!DOCTYPE html>
             }
             
             const user = userNames[pin];
-            console.log('PIN entered:', pin, 'User:', user);
+            console.log('🔑 PIN entered:', pin, 'User:', user);
             
             if (user) {
                 console.log('✅ PIN correct! User:', user);
                 sessionStorage.setItem('user', user);
                 currentUser = user;
+                console.log('📱 Current user set to:', currentUser);
                 document.getElementById('userButton').textContent = user.toUpperCase();
                 document.getElementById('pinScreen').style.display = 'none';
                 document.getElementById('login').style.display = 'flex';
-                try {
-                    window.enterChat();
-                } catch (error) {
-                    console.error('Error entering chat:', error);
-                    alert('Error loading chat. Try again.');
-                }
+                
+                setTimeout(() => {
+                    try {
+                        window.enterChat();
+                    } catch (error) {
+                        console.error('❌ Error entering chat:', error);
+                        alert('Error loading chat. Try again.');
+                    }
+                }, 300);
             } else {
                 console.log('❌ Wrong PIN');
                 alert('Wrong PIN! Try again.');
@@ -782,46 +786,75 @@ const html = `<!DOCTYPE html>
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('msg').addEventListener('keypress', (e) => { if (e.key === 'Enter') window.send(); });
+            console.log('🚀 App loading...');
+            
+            try {
+                document.getElementById('msg').addEventListener('keypress', (e) => { if (e.key === 'Enter') window.send(); });
+            } catch (e) {
+                console.warn('Message input not found:', e.message);
+            }
             
             // Add PIN keyboard support
-            const pinInput = document.getElementById('pinInput');
-            pinInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    window.checkPin();
+            try {
+                const pinInput = document.getElementById('pinInput');
+                if (!pinInput) {
+                    console.error('❌ PIN input not found!');
+                    return;
                 }
-            });
-            
-            pinInput.addEventListener('input', (e) => {
-                // Only allow numbers
-                e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
-                console.log('PIN input:', e.target.value);
                 
-                // Auto-submit when 4 digits are entered
-                if (e.target.value.length === 4) {
-                    setTimeout(window.checkPin, 300);
-                }
-            });
+                pinInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        window.checkPin();
+                    }
+                });
+                
+                pinInput.addEventListener('input', (e) => {
+                    // Only allow numbers
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
+                    console.log('📝 PIN input:', e.target.value);
+                    
+                    // Auto-submit when 4 digits are entered
+                    if (e.target.value.length === 4) {
+                        console.log('⏳ Auto-checking PIN in 300ms...');
+                        setTimeout(window.checkPin, 300);
+                    }
+                });
+                
+                console.log('✅ PIN input ready');
+            } catch (e) {
+                console.error('❌ Error setting up PIN input:', e);
+            }
             
             // Check if we have a saved user session
-            const savedUser = sessionStorage.getItem('user');
-            if (savedUser) {
-                // User is already logged in - go straight to chat
-                currentUser = savedUser;
-                document.getElementById('pinScreen').style.display = 'none';
-                document.getElementById('login').style.display = 'none';
-                window.enterChat();
-            } else {
-                // No active session - show login screen
-                document.getElementById('pinScreen').style.display = 'flex';
-                document.getElementById('login').style.display = 'none';
-                pinInput.focus();
+            try {
+                const savedUser = sessionStorage.getItem('user');
+                console.log('📋 Saved user:', savedUser);
+                
+                if (savedUser) {
+                    // User is already logged in - go straight to chat
+                    console.log('✅ User already logged in as:', savedUser);
+                    currentUser = savedUser;
+                    document.getElementById('pinScreen').style.display = 'none';
+                    document.getElementById('login').style.display = 'none';
+                    window.enterChat();
+                } else {
+                    // No active session - show login screen
+                    console.log('🔐 No saved session - showing login');
+                    document.getElementById('pinScreen').style.display = 'flex';
+                    document.getElementById('login').style.display = 'none';
+                    const pinInput = document.getElementById('pinInput');
+                    if (pinInput) pinInput.focus();
+                }
+            } catch (e) {
+                console.error('❌ Error checking session:', e);
             }
             
             // Keep session alive while app is running
             window.addEventListener('beforeunload', () => {
                 console.log('App closing - session will be cleared on reload');
             });
+            
+            console.log('✅ App initialization complete');
         });
 
         window.toggleEmoji = function() {
