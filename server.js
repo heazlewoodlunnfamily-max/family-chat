@@ -110,7 +110,7 @@ const html = `<!DOCTYPE html>
     <div class="login-screen" id="pinScreen">
         <div class="cat-image"><img src="/axolotl.png?v=4" style="max-width: 280px; max-height: 280px; border-radius: 15px; display: block;"></div>
         <h2 style="color: white; margin: 10px 0 20px 0; font-size: 18px;">Enter PIN</h2>
-        <input type="text" id="pinInput" placeholder="••••" inputmode="numeric" maxlength="4" style="padding: 12px; font-size: 24px; border: 2px solid #007AFF; border-radius: 10px; width: 180px; text-align: center; letter-spacing: 10px; margin-bottom: 20px; background: #ffffff; font-weight: bold;" autocomplete="off" onkeyup="if(this.value.length===4) window.checkPin();">
+        <input type="text" id="pinInput" placeholder="••••" inputmode="numeric" maxlength="4" style="padding: 12px; font-size: 32px; border: 3px solid #007AFF; border-radius: 10px; width: 180px; text-align: center; letter-spacing: 15px; margin-bottom: 20px; background: #ffffff; font-weight: bold; color: #000; -webkit-text-security: disc;" autocomplete="off" onkeyup="if(this.value.length===4) window.checkPin();">
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 200px; margin-bottom: 15px;">
             <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('1')">1</button>
             <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('2')">2</button>
@@ -174,23 +174,25 @@ const html = `<!DOCTYPE html>
         };
 
         window.addPin = function(digit) {
-            console.log('Adding digit:', digit);
+            console.log('🔢 Adding digit:', digit);
             const pinInput = document.getElementById('pinInput');
             if (!pinInput) {
-                console.error('PIN input not found!');
+                console.error('❌ PIN input not found!');
+                alert('PIN input error!');
                 return;
             }
             
             if (pinInput.value.length < 4) {
                 pinInput.value += digit;
-                console.log('PIN now:', pinInput.value);
+                pinInput.focus();
+                console.log('📝 PIN now:', pinInput.value.length, 'digits');
                 
                 // Auto-check if 4 digits
                 if (pinInput.value.length === 4) {
+                    console.log('✅ 4 digits entered, auto-checking...');
                     setTimeout(() => {
-                        console.log('Auto-checking PIN...');
                         window.checkPin();
-                    }, 300);
+                    }, 500);
                 }
             }
         };
@@ -816,6 +818,8 @@ const html = `<!DOCTYPE html>
                     return;
                 }
                 
+                console.log('✅ PIN input found:', pinInput);
+                
                 pinInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         window.checkPin();
@@ -825,16 +829,25 @@ const html = `<!DOCTYPE html>
                 pinInput.addEventListener('input', (e) => {
                     // Only allow numbers
                     e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
-                    console.log('📝 PIN input:', e.target.value);
+                    console.log('📝 PIN input:', e.target.value, 'Length:', e.target.value.length);
                     
                     // Auto-submit when 4 digits are entered
                     if (e.target.value.length === 4) {
-                        console.log('⏳ Auto-checking PIN in 300ms...');
-                        setTimeout(window.checkPin, 300);
+                        console.log('⏳ 4 digits detected, auto-checking PIN...');
+                        setTimeout(window.checkPin, 500);
                     }
                 });
                 
-                console.log('✅ PIN input ready');
+                // Make sure it's visible and focused
+                pinInput.style.display = 'block';
+                pinInput.style.visibility = 'visible';
+                pinInput.style.opacity = '1';
+                setTimeout(() => {
+                    pinInput.focus();
+                    console.log('🎯 PIN input focused');
+                }, 100);
+                
+                console.log('✅ PIN input ready for input');
             } catch (e) {
                 console.error('❌ Error setting up PIN input:', e);
             }
