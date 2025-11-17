@@ -138,7 +138,7 @@ const html = `<!DOCTYPE html>
     <div class="login-screen" id="pinScreen">
         <div class="cat-image"><img src="/axolotl.png?v=4" style="max-width: 280px; max-height: 280px; border-radius: 15px; display: block;"></div>
         <h2 style="color: white; margin: 10px 0 20px 0; font-size: 18px;">Enter PIN</h2>
-        <input type="password" id="pinInput" placeholder="••••" style="padding: 12px; font-size: 24px; border: 2px solid white; border-radius: 10px; width: 180px; text-align: center; letter-spacing: 10px; margin-bottom: 20px;">
+        <input type="text" id="pinInput" placeholder="••••" inputmode="numeric" maxlength="4" style="padding: 12px; font-size: 24px; border: 2px solid #007AFF; border-radius: 10px; width: 180px; text-align: center; letter-spacing: 10px; margin-bottom: 20px; background: #ffffff;" autocomplete="off">
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 200px; margin-bottom: 15px;">
             <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('1')">1</button>
             <button class="login-btn" style="margin: 0; padding: 12px; font-size: 16px;" onclick="window.addPin('2')">2</button>
@@ -205,27 +205,36 @@ const html = `<!DOCTYPE html>
             const pinInput = document.getElementById('pinInput');
             if (pinInput.value.length < 4) {
                 pinInput.value += digit;
+                console.log('PIN:', pinInput.value);
             }
         };
 
         window.delPin = function() {
             const pinInput = document.getElementById('pinInput');
             pinInput.value = pinInput.value.slice(0, -1);
+            console.log('PIN after delete:', pinInput.value);
         };
 
         window.clearPin = function() {
-            document.getElementById('pinInput').value = '';
+            const pinInput = document.getElementById('pinInput');
+            pinInput.value = '';
+            console.log('PIN cleared');
         };
 
         window.checkPin = function() {
             const pin = document.getElementById('pinInput').value;
+            console.log('Checking PIN:', pin, 'Length:', pin.length);
+            
             if (pin.length !== 4) {
                 alert('PIN must be 4 digits');
                 return;
             }
+            
             const user = userNames[pin];
             console.log('PIN entered:', pin, 'User:', user);
+            
             if (user) {
+                console.log('✅ PIN correct! User:', user);
                 sessionStorage.setItem('user', user);
                 currentUser = user;
                 document.getElementById('userButton').textContent = user.toUpperCase();
@@ -238,6 +247,7 @@ const html = `<!DOCTYPE html>
                     alert('Error loading chat. Try again.');
                 }
             } else {
+                console.log('❌ Wrong PIN');
                 alert('Wrong PIN! Try again.');
                 document.getElementById('pinInput').value = '';
             }
@@ -802,6 +812,25 @@ const html = `<!DOCTYPE html>
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('msg').addEventListener('keypress', (e) => { if (e.key === 'Enter') window.send(); });
             
+            // Add PIN keyboard support
+            const pinInput = document.getElementById('pinInput');
+            pinInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    window.checkPin();
+                }
+            });
+            
+            pinInput.addEventListener('input', (e) => {
+                // Only allow numbers
+                e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
+                console.log('PIN input:', e.target.value);
+                
+                // Auto-submit when 4 digits are entered
+                if (e.target.value.length === 4) {
+                    setTimeout(window.checkPin, 300);
+                }
+            });
+            
             // Check if we have a saved user session
             const savedUser = sessionStorage.getItem('user');
             if (savedUser) {
@@ -814,6 +843,7 @@ const html = `<!DOCTYPE html>
                 // No active session - show login screen
                 document.getElementById('pinScreen').style.display = 'flex';
                 document.getElementById('login').style.display = 'none';
+                pinInput.focus();
             }
             
             // Keep session alive while app is running
