@@ -10,9 +10,7 @@ const wss = new WebSocket.Server({ server });
 
 app.use(express.json());
 
-const messagesFile = process.env.RENDER ? '/var/data/messages.json' : path.join(__dirname, 'messages.json');
-
-// Keep messages in memory (primary storage)
+// Messages stored in memory (no file system)
 let messagesStorage = {};
 
 const defaultMessages = {
@@ -33,58 +31,24 @@ const defaultMessages = {
 };
 
 function loadMessages() {
-  try {
-    // Try to load from file
-    if (fs.existsSync(messagesFile)) {
-      const data = fs.readFileSync(messagesFile, 'utf8');
-      console.log('✅ Messages loaded from file:', messagesFile);
-      messagesStorage = JSON.parse(data);
-      return messagesStorage;
-    }
-  } catch (error) {
-    console.warn('⚠️ Could not read file:', error.message);
+  // If storage is empty, use defaults
+  if (Object.keys(messagesStorage).length === 0) {
+    messagesStorage = JSON.parse(JSON.stringify(defaultMessages));
+    console.log('📝 Using default messages');
+  } else {
+    console.log('✅ Messages loaded from memory');
   }
-  
-  // Fallback: use in-memory storage
-  if (Object.keys(messagesStorage).length > 0) {
-    console.log('✅ Using messages from memory');
-    return messagesStorage;
-  }
-  
-  console.log('📝 Using default messages');
-  messagesStorage = JSON.parse(JSON.stringify(defaultMessages));
   return messagesStorage;
 }
 
 function saveMessages(msgs) {
-  // Always save to memory
+  // Save to memory only
   messagesStorage = JSON.parse(JSON.stringify(msgs));
-  
-  // Try to save to file as backup
-  try {
-    fs.writeFileSync(messagesFile, JSON.stringify(msgs, null, 2));
-    console.log('✅ Saved to file');
-  } catch (error) {
-    console.warn('⚠️ File save failed (using memory):', error.message);
-  }
+  console.log('✅ Messages saved to memory');
 }
 
-// Auto-save messages every second
+// Load messages into memory
 let messages = loadMessages();
-setInterval(() => {
-  try {
-    // Ensure directory exists before saving
-    if (process.env.RENDER) {
-      const dataDir = '/var/data';
-      if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
-      }
-    }
-    fs.writeFileSync(messagesFile, JSON.stringify(messages, null, 2));
-  } catch (error) {
-    console.error('Auto-save error:', error.message);
-  }
-}, 1000);
 
 const html = `<!DOCTYPE html>
 <html lang="en">
