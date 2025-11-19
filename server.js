@@ -295,30 +295,82 @@ const html = `<!DOCTYPE html>
         };
 
         window.enterChat = function() {
+            console.log('=== enterChat CALLED ===');
             try {
-                // Request notification permission on chat entry
-                if ('Notification' in window && Notification.permission === 'default') {
-                    Notification.requestPermission().then(permission => {
-                        console.log('Notification permission requested:', permission);
-                    });
+                console.log('1. currentUser:', currentUser);
+                
+                // Show app
+                const app = document.getElementById('app');
+                console.log('2. app element:', app);
+                
+                if (app) {
+                    app.classList.add('show');
+                    console.log('3. Added show class to app');
+                } else {
+                    console.error('❌ App element not found!');
+                    alert('Error: App element not found');
+                    return;
                 }
                 
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('app').classList.add('show');
-                document.getElementById('myname').textContent = currentUser.toUpperCase();
+                // Update user name
+                const myname = document.getElementById('myname');
+                if (myname) {
+                    myname.textContent = 'You: ' + (currentUser ? currentUser.toUpperCase() : 'UNKNOWN');
+                    console.log('4. Updated myname');
+                }
                 
+                // Initialize chats based on user
+                console.log('5. Setting up chats for user:', currentUser);
                 allChats = ['group'];
-                
-                // Check notification permission and show button if needed
-                if ('Notification' in window && Notification.permission !== 'granted') {
-                    document.getElementById('notifBtn').style.display = 'block';
-                    console.log('Notifications not granted. Show request button.');
-                }
                 
                 if (currentUser === 'esther') {
                     allChats = ['group', 'family-group', 'esther-mama', 'esther-mummy', 'esther-hilary', 'esther-nan', 'esther-rishy', 'esther-poppy', 'esther-sienna', 'esther-twins', 'esther-lola'];
                 } else if (currentUser === 'mama') {
                     allChats = ['group', 'family-group', 'esther-mama'];
+                } else if (currentUser === 'mummy') {
+                    allChats = ['group', 'family-group', 'esther-mummy'];
+                } else if (currentUser === 'lola') {
+                    allChats = ['family-group', 'esther-lola', 'lola-nan', 'lola-poppy'];
+                }
+                
+                console.log('6. allChats:', allChats);
+                
+                // Initialize messages for each chat
+                allChats.forEach(chat => {
+                    if (!messages[chat]) {
+                        messages[chat] = [];
+                    }
+                });
+                
+                console.log('7. messages initialized');
+                
+                // Render tabs
+                console.log('8. Rendering tabs...');
+                window.renderTabs();
+                
+                // Connect WebSocket
+                console.log('9. Connecting WebSocket...');
+                window.connect();
+                
+                // Render chat
+                console.log('10. Rendering chat...');
+                window.render();
+                
+                // Request notifications
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission().then(permission => {
+                        console.log('Notification permission:', permission);
+                    });
+                }
+                
+                console.log('=== enterChat COMPLETED ===');
+                
+            } catch (error) {
+                console.error('❌ FATAL ERROR in enterChat:', error);
+                console.error('Stack:', error.stack);
+                alert('Fatal error: ' + error.message);
+            }
+        };
                 } else if (currentUser === 'mummy') {
                     allChats = ['group', 'family-group', 'esther-mummy'];
                 } else if (currentUser === 'twins') {
