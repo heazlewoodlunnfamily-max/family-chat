@@ -371,67 +371,6 @@ const html = `<!DOCTYPE html>
                 alert('Fatal error: ' + error.message);
             }
         };
-                } else if (currentUser === 'mummy') {
-                    allChats = ['group', 'family-group', 'esther-mummy'];
-                } else if (currentUser === 'twins') {
-                    allChats = ['group', 'guptas-chat', 'esther-twins'];
-                } else if (currentUser === 'hilary') {
-                    allChats = ['group', 'guptas-chat'];
-                } else if (currentUser === 'lola') {
-                    allChats = ['family-group', 'esther-lola', 'lola-nan', 'lola-poppy'];
-                } else if (currentUser === 'poppy') {
-                    allChats = ['esther-poppy', 'lola-poppy'];
-                } else if (currentUser === 'nan') {
-                    allChats = ['esther-nan', 'lola-nan'];
-                } else if (currentUser === 'rishy') {
-                    allChats = ['group', 'esther-rishy'];
-                } else if (currentUser === 'sienna') {
-                    allChats = ['esther-sienna'];
-                }
-                
-                currentChat = allChats[0];
-                window.updateChatName();
-                console.log('Current user:', currentUser);
-                console.log('Available chats:', allChats);
-                
-                allChats.forEach(chat => {
-                    if (!messages[chat]) {
-                        messages[chat] = [];
-                    }
-                });
-                
-                console.log('Messages loaded:', messages);
-                
-                if ('Notification' in window) {
-                    if (Notification.permission === 'granted') {
-                        console.log('Notifications already granted');
-                    } else if (Notification.permission !== 'denied') {
-                        Notification.requestPermission().then(permission => {
-                            console.log('Notification permission:', permission);
-                        });
-                    }
-                }
-                
-                const emojis = '😀😃😄😁😆😅🤣😂😈😉😊😇🙂🙃😌😍🥰😘😗😚😙🥺😋😛😜🤪😝🤑😎🤓🧐😕😟🙁☹️😲😞😖😢😤😠😆😡🤬😈👿💀☠️💩🤡👹👺😺😸😹😻😼😽🙀😿😾❤️🧡💛💚💙💜🖤🤍🤎💔💕💞💓💗💖💘💝💟💌💋💯💢💥💫💦💨🕳️💬👋🤚🖐️✋🖖👌🤌🤏✌️🤞🫰🤟🤘🤙👍👎✊👊🤛🫲🫱💪🦾🦿🦵🦶🫶👂🦻👃🧠🦷🦴👀👁️👅👄🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐽🐸🐵🐒🐶🐱🦁🐯🐻‍❄️🐨🐼🦁🐭🐹🐰🦊🦝🐗🐷🐽🦓🦄🐴🐝🪱🐛🦋🐌🐞🐜🦟🪰🪳‍🕷️🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🐊🐅🐆🦒🦓🦍🦧🐘🦛🦏🐪🐫🦒🦘🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐈🐓🦃🦚🦜🦢🦗🕷️🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🐊🐅🐆🦒';
-                const emojiPicker = document.getElementById('emojiPicker');
-                if (emojiPicker) {
-                    emojiPicker.innerHTML = '';
-                    for (let emoji of emojis) {
-                        const btn = document.createElement('button');
-                        btn.textContent = emoji;
-                        btn.onclick = () => { document.getElementById('msg').value += emoji; };
-                        emojiPicker.appendChild(btn);
-                    }
-                }
-                
-                window.renderTabs();
-                window.connect();
-                window.render();
-            } catch (error) {
-                console.error('Fatal error in enterChat:', error);
-                alert('Error: ' + error.message);
-            }
-        };
 
         window.login = function(user) {
             if (!user) return;
@@ -481,11 +420,6 @@ const html = `<!DOCTYPE html>
             window.renderTabs();
             window.connect();
             window.render();
-        };
-
-        window.logout = function() {
-            sessionStorage.removeItem('user');
-            location.reload();
         };
 
         window.connect = function() {
