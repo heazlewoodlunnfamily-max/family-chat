@@ -210,61 +210,49 @@ const html = `<!DOCTYPE html>
         };
 
         window.checkPin = function() {
-            console.log('✅ checkPin function called!');
+            console.log('✅ checkPin called!');
+            alert('checkPin function triggered!');
             
-            try {
-                const pinInput = document.getElementById('pinInput');
-                const pin = pinInput ? pinInput.value : '';
-                
-                console.log('📍 PIN value:', pin);
-                console.log('📍 PIN length:', pin.length);
-                console.log('📍 userNames object:', userNames);
-                
-                if (pin.length === 0) {
-                    alert('⚠️ Please enter a PIN');
-                    return;
-                }
-                
-                if (pin.length !== 4) {
-                    alert('⚠️ PIN must be exactly 4 digits (you entered ' + pin.length + ')');
-                    return;
-                }
-                
-                // Check if PIN exists in userNames
-                if (userNames.hasOwnProperty(pin)) {
-                    const user = userNames[pin];
-                    console.log('✅ Valid PIN! User:', user);
-                    
-                    // Save and switch user
-                    currentUser = user;
-                    sessionStorage.setItem('user', user);
-                    
-                    // Hide PIN screen, show login screen
-                    const pinScreen = document.getElementById('pinScreen');
-                    const loginDiv = document.getElementById('login');
-                    
-                    if (pinScreen) pinScreen.style.display = 'none';
-                    if (loginDiv) loginDiv.style.display = 'flex';
-                    
-                    // Update user button
-                    const userBtn = document.getElementById('userButton');
-                    if (userBtn) userBtn.textContent = user.toUpperCase();
-                    
-                    // Wait and enter chat
-                    setTimeout(() => {
-                        window.enterChat();
-                    }, 200);
-                    
-                } else {
-                    console.log('❌ Invalid PIN:', pin);
-                    console.log('✅ Valid PINs are:', Object.keys(userNames));
-                    alert('❌ Wrong PIN!\n\nValid PINs:\n• 2107 = Esther\n• 9876 = Mama\n• 8765 = Mummy\n• 1234 = Lola\n• 1818 = Twins');
-                    pinInput.value = '';
-                }
-            } catch (error) {
-                console.error('💥 Error in checkPin:', error);
-                console.error('Stack:', error.stack);
-                alert('❌ Error: ' + error.message);
+            const pinInput = document.getElementById('pinInput');
+            if (!pinInput) {
+                alert('ERROR: PIN input not found');
+                return;
+            }
+            
+            const pin = pinInput.value;
+            alert('PIN value: ' + pin);
+            
+            if (pin === '2107') {
+                alert('✅ Esther logged in!');
+                currentUser = 'esther';
+                sessionStorage.setItem('user', 'esther');
+                document.getElementById('pinScreen').style.display = 'none';
+                document.getElementById('app').classList.add('show');
+                setTimeout(() => { window.enterChat(); }, 200);
+            } else if (pin === '9876') {
+                alert('✅ Mama logged in!');
+                currentUser = 'mama';
+                sessionStorage.setItem('user', 'mama');
+                document.getElementById('pinScreen').style.display = 'none';
+                document.getElementById('app').classList.add('show');
+                setTimeout(() => { window.enterChat(); }, 200);
+            } else if (pin === '8765') {
+                alert('✅ Mummy logged in!');
+                currentUser = 'mummy';
+                sessionStorage.setItem('user', 'mummy');
+                document.getElementById('pinScreen').style.display = 'none';
+                document.getElementById('app').classList.add('show');
+                setTimeout(() => { window.enterChat(); }, 200);
+            } else if (pin === '1234') {
+                alert('✅ Lola logged in!');
+                currentUser = 'lola';
+                sessionStorage.setItem('user', 'lola');
+                document.getElementById('pinScreen').style.display = 'none';
+                document.getElementById('app').classList.add('show');
+                setTimeout(() => { window.enterChat(); }, 200);
+            } else {
+                alert('❌ Wrong PIN: ' + pin + '\n\nValid PINs:\n2107=Esther\n9876=Mama\n8765=Mummy\n1234=Lola');
+                pinInput.value = '';
             }
         };
 
