@@ -62,7 +62,7 @@ const html = `<!DOCTYPE html>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { height: 100%; margin: 0; padding: 0; }
         body { height: 100vh; overflow: hidden; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif; background: #f5f5f7; }
-        .login-screen { position: fixed; width: 100vw; height: 100vh; background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%); display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px; text-align: center; z-index: 100; overflow: auto; -webkit-overflow-scrolling: touch; }
+        .login-screen { position: fixed; width: 100vw; height: 100vh; background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%); display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 10px; text-align: center; z-index: 100; overflow-y: auto; -webkit-overflow-scrolling: touch; gap: 8px; }
         .login-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; width: 100%; max-width: 300px; max-height: 35vh; overflow-y: auto; margin-top: 20px; }
         .login-btn { padding: 14px; background: #007AFF; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,122,255,0.3); transition: all 0.2s; }
         .login-btn:active { transform: scale(0.95); }
@@ -108,24 +108,24 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
     <div class="login-screen" id="pinScreen">
-        <div class="cat-image"><img src="/axolotl.png?v=4" style="max-width: 140px; max-height: 140px; border-radius: 15px; display: block; margin: 0;"></div>
-        <h2 style="color: #000; margin: 8px 0 12px 0; font-size: 16px;">Enter PIN</h2>
-        <input type="text" id="pinInput" placeholder="••••" inputmode="numeric" maxlength="4" style="padding: 10px; font-size: 28px; border: 3px solid #007AFF; border-radius: 10px; width: 160px; text-align: center; letter-spacing: 15px; margin-bottom: 12px; background: #ffffff; font-weight: bold; color: #000; -webkit-text-security: disc;" autocomplete="off" onkeyup="if(this.value.length===4) window.checkPin();">
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; width: 180px; margin-bottom: 10px;">
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '1'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">1</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '2'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">2</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '3'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">3</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '4'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">4</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '5'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">5</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '6'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">6</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '7'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">7</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '8'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">8</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '9'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">9</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px; background: #999;" type="button" onclick="document.getElementById('pinInput').value = '';">CLR</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px;" type="button" onclick="document.getElementById('pinInput').value += '0'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">0</button>
-            <button class="login-btn" style="margin: 0; padding: 10px; font-size: 14px; background: #ff6b6b;" type="button" onclick="document.getElementById('pinInput').value = document.getElementById('pinInput').value.slice(0, -1);">DEL</button>
+        <div class="cat-image"><img src="/axolotl.png?v=4" style="max-width: 100px; max-height: 100px; border-radius: 15px; display: block; margin: 0; margin-top: 5px;"></div>
+        <h2 style="color: #000; margin: 5px 0 8px 0; font-size: 14px;">Enter PIN</h2>
+        <input type="text" id="pinInput" placeholder="••••" inputmode="numeric" maxlength="4" style="padding: 8px; font-size: 24px; border: 3px solid #007AFF; border-radius: 10px; width: 140px; text-align: center; letter-spacing: 12px; margin: 5px 0; background: #ffffff; font-weight: bold; color: #000; -webkit-text-security: disc;" autocomplete="off" onkeyup="if(this.value.length===4) window.checkPin();">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; width: 160px; margin: 5px 0;">
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '1'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">1</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '2'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">2</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '3'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">3</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '4'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">4</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '5'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">5</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '6'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">6</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '7'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">7</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '8'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">8</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '9'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">9</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px; background: #999;" type="button" onclick="document.getElementById('pinInput').value = '';">CLR</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px;" type="button" onclick="document.getElementById('pinInput').value += '0'; if(document.getElementById('pinInput').value.length === 4) window.checkPin();">0</button>
+            <button class="login-btn" style="margin: 0; padding: 8px; font-size: 12px; background: #ff6b6b;" type="button" onclick="document.getElementById('pinInput').value = document.getElementById('pinInput').value.slice(0, -1);">DEL</button>
         </div>
-        <button class="login-btn" style="width: 180px; padding: 12px; font-size: 16px; cursor: pointer; margin-top: 5px;" type="button" onclick="console.log('Login button clicked'); window.checkPin();">LOGIN</button>
+        <button class="login-btn" style="width: 160px; padding: 10px; font-size: 14px; cursor: pointer; margin-top: 3px;" type="button" onclick="window.checkPin();">LOGIN</button>
     </div>
 
     <div class="login-screen" id="login" style="display: none;">
